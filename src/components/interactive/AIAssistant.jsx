@@ -50,8 +50,8 @@ export function AIAssistant() {
     setError(null)
 
     try {
-      const apiKey = import.meta.env.VITE_OPENCODE_API_KEY
-      const apiUrl = import.meta.env.VITE_OPENCODE_API_URL
+      const apiKey = process.env.NEXT_PUBLIC_OPENCODE_API_KEY || process.env.VITE_OPENCODE_API_KEY
+      const apiUrl = process.env.NEXT_PUBLIC_OPENCODE_API_URL || process.env.VITE_OPENCODE_API_URL
 
       if (!apiKey || !apiUrl) {
         throw new Error('API configuration missing')
