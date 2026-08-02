@@ -522,6 +522,7 @@ export default function AdminPage() {
             scrollProgress={0} 
             activeNode={null} 
             setActiveNode={() => {}} 
+            alignLeft={true}
           />
         </div>
 

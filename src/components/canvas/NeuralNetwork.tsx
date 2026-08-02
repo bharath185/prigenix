@@ -9,9 +9,10 @@ interface NeuralNetworkProps {
   scrollProgress: number
   activeNode: number | null
   setActiveNode: (id: number | null) => void
+  alignLeft?: boolean
 }
 
-export function NeuralNetwork({ scrollProgress, activeNode }: NeuralNetworkProps) {
+export function NeuralNetwork({ scrollProgress, activeNode, alignLeft }: NeuralNetworkProps) {
   const groupRef = useRef<THREE.Group>(null)
   const activeLineGeomRef = useRef<THREE.BufferGeometry>(null)
   const backgroundPointsGeomRef = useRef<THREE.BufferGeometry>(null)
@@ -22,10 +23,13 @@ export function NeuralNetwork({ scrollProgress, activeNode }: NeuralNetworkProps
   const particleCount = 350
   const maxActiveLines = 400
 
-  // Dynamic responsive alignment: offset to the right on desktop, centered on mobile
+  // Dynamic responsive alignment: offset to the right on desktop, centered on mobile, or left for login page
   const groupOffsetX = useMemo(() => {
+    if (alignLeft) {
+      return viewport.width > 7 ? -2.2 : 0
+    }
     return viewport.width > 7 ? 1.8 : 0
-  }, [viewport.width])
+  }, [viewport.width, alignLeft])
 
   // 1. Initialize random floating coordinates in space
   const [initialPositions, livePositions] = useMemo(() => {

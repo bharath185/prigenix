@@ -10,9 +10,10 @@ interface NexusCanvasProps {
   scrollProgress: number
   activeNode: number | null
   setActiveNode: (id: number | null) => void
+  alignLeft?: boolean
 }
 
-export function NexusCanvas({ scrollProgress, activeNode, setActiveNode }: NexusCanvasProps) {
+export function NexusCanvas({ scrollProgress, activeNode, setActiveNode, alignLeft }: NexusCanvasProps) {
   return (
     <div className="absolute inset-0 z-0 h-full w-full overflow-hidden bg-transparent">
       <Canvas camera={{ position: [0, 0, 9], fov: 45 }}>
@@ -33,6 +34,7 @@ export function NexusCanvas({ scrollProgress, activeNode, setActiveNode }: Nexus
             scrollProgress={scrollProgress}
             activeNode={activeNode}
             setActiveNode={setActiveNode}
+            alignLeft={alignLeft}
           />
         </Suspense>
 
