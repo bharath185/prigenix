@@ -515,9 +515,9 @@ export default function AdminPage() {
   // If not logged in, render the credential form with 3D canvas and right alignment
   if (!isLoggedIn) {
     return (
-      <main className="min-h-screen w-full bg-[#0A0A0A] font-sans flex flex-row overflow-hidden relative">
+      <main className="h-screen w-screen bg-[#0A0A0A] font-sans relative overflow-hidden flex items-center justify-end px-6 md:px-20">
         {/* Background layer: 3D interactive Nexus Canvas */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 w-full h-full z-0">
           <NexusCanvas 
             scrollProgress={0} 
             activeNode={null} 
@@ -525,71 +525,69 @@ export default function AdminPage() {
           />
         </div>
 
-        {/* Foreground container: right-aligned for the login card */}
-        <div className="relative z-10 w-full min-h-screen flex items-center justify-end px-6 md:px-20 pointer-events-none">
-          <form 
-            onSubmit={handleLogin} 
-            className="w-full max-w-md bg-[#060A08]/85 border border-white/5 shadow-2xl rounded-3xl p-8 space-y-6 pointer-events-auto backdrop-blur-md transition-all duration-700 animate-in fade-in slide-in-from-right-12"
+        {/* Login form is a direct child of the screen-size relative container */}
+        <form 
+          onSubmit={handleLogin} 
+          className="relative z-10 w-full max-w-md bg-[#060A08]/85 border border-white/5 shadow-2xl rounded-3xl p-8 space-y-6 backdrop-blur-md transition-all duration-700 animate-in fade-in slide-in-from-right-12"
+        >
+          <div className="flex flex-col items-center text-center space-y-2">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#0D5B3A]/30 bg-[#0A0A0A] shadow-md">
+              <img src="/logo.png" alt="Prigenix Logo" className="h-8 w-8 object-contain" />
+            </div>
+            <h2 className="font-heading text-lg font-extrabold uppercase tracking-widest text-white mt-4">
+              Prigenix Secure Login
+            </h2>
+            <p className="font-mono text-[9px] uppercase tracking-wider text-text-muted">
+              Quotation & Agreement Workspace
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Username</label>
+              <div className="relative flex items-center">
+                <User className="absolute left-3 text-text-muted" size={14} />
+                <input
+                  type="text"
+                  required
+                  placeholder="admin or marketing"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-10 pr-4 text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Secret Passcode</label>
+              <div className="relative flex items-center">
+                <Lock className="absolute left-3 text-text-muted" size={14} />
+                <input
+                  type="password"
+                  required
+                  placeholder="Enter role password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-10 pr-4 text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          {loginError && (
+            <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-xs font-sans">
+              <AlertCircle size={14} className="shrink-0" />
+              <span>{loginError}</span>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="w-full py-4 rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan font-heading text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-accent-purple/20 hover:brightness-110 active:scale-98 transition-all cursor-pointer"
           >
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#0D5B3A]/30 bg-[#0A0A0A] shadow-md">
-                <img src="/logo.png" alt="Prigenix Logo" className="h-8 w-8 object-contain" />
-              </div>
-              <h2 className="font-heading text-lg font-extrabold uppercase tracking-widest text-white mt-4">
-                Prigenix Secure Login
-              </h2>
-              <p className="font-mono text-[9px] uppercase tracking-wider text-text-muted">
-                Quotation & Agreement Workspace
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Username</label>
-                <div className="relative flex items-center">
-                  <User className="absolute left-3 text-text-muted" size={14} />
-                  <input
-                    type="text"
-                    required
-                    placeholder="admin or marketing"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-10 pr-4 text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Secret Passcode</label>
-                <div className="relative flex items-center">
-                  <Lock className="absolute left-3 text-text-muted" size={14} />
-                  <input
-                    type="password"
-                    required
-                    placeholder="Enter role password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-10 pr-4 text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {loginError && (
-              <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-xs font-sans">
-                <AlertCircle size={14} className="shrink-0" />
-                <span>{loginError}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan font-heading text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-accent-purple/20 hover:brightness-110 active:scale-98 transition-all cursor-pointer"
-            >
-              Authenticate Credentials
-            </button>
-          </form>
-        </div>
+            Authenticate Credentials
+          </button>
+        </form>
       </main>
     )
   }
