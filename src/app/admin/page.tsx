@@ -532,15 +532,12 @@ export default function AdminPage() {
           className="relative z-10 w-full max-w-md bg-[#060A08]/85 border border-white/5 shadow-2xl rounded-3xl p-8 space-y-6 backdrop-blur-md transition-all duration-700 animate-in fade-in slide-in-from-right-12"
         >
           <div className="flex flex-col items-center text-center space-y-2">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#0D5B3A]/30 bg-[#0A0A0A] shadow-md">
-              <img src="/logo.png" alt="Prigenix Logo" className="h-8 w-8 object-contain" />
+            <div className="h-24 w-24 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
+              <img src="/logo.png" alt="Prigenix Logo" className="h-full w-full object-contain" />
             </div>
             <h2 className="font-heading text-lg font-extrabold uppercase tracking-widest text-white mt-4">
               Prigenix Secure Login
             </h2>
-            <p className="font-mono text-[9px] uppercase tracking-wider text-text-muted">
-              Quotation & Agreement Workspace
-            </p>
           </div>
 
           <div className="space-y-4">
