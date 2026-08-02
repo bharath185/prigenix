@@ -577,9 +577,27 @@ export default function AdminPage() {
 
   return (
     <main className="h-screen w-screen bg-[#0A0A0A] font-sans text-white antialiased flex flex-row overflow-hidden print:bg-white print:text-black print:h-auto print:overflow-visible">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          @page {
+            size: A4;
+            margin: 15mm 15mm 15mm 15mm;
+          }
+          body, main {
+            background: white !important;
+            color: black !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+          }
+          tr, li, p, h1, h2, h3, h4, h5, h6 {
+            page-break-inside: avoid !important;
+          }
+        }
+      `}} />
       
       {/* 2. Left Menu Bar (no-print) */}
-      <section className="no-print h-screen w-80 shrink-0 bg-[#060A08] border-r border-white/5 flex flex-col justify-between py-6 px-6 overflow-hidden">
+      <section className="print:hidden h-screen w-80 shrink-0 bg-[#060A08] border-r border-white/5 flex flex-col justify-between py-6 px-6 overflow-hidden">
         <div>
           {/* Logo header */}
           <div className="flex items-center gap-3 mb-8">
@@ -691,7 +709,7 @@ export default function AdminPage() {
       </section>
 
       {/* 3. Middle Area: Fit Screen Layout with Scrollable Inner Panels */}
-      <section className="no-print flex-1 h-screen overflow-hidden flex flex-col px-8 py-8">
+      <section className="print:hidden flex-1 h-screen overflow-hidden flex flex-col px-8 py-8">
         
         {/* VIEW: STATUS MONITOR TRACKER */}
         {activeTab === 'monitor' && (
@@ -1751,7 +1769,7 @@ export default function AdminPage() {
       </section>
 
       {/* 4. Document Live Preview (HIDDEN ON SCREEN, ONLY VISIBLE DURING PRINT) */}
-      <section className="print-area hidden bg-white text-black p-0 overflow-visible justify-center items-start print:flex print:w-full print:p-0 print:overflow-visible">
+      <section className="hidden print:block print:absolute print:left-0 print:top-0 print:z-[99999] print:w-full print:bg-white print:text-black print:overflow-visible">
         
         {/* Virtual A4 Sheet Container */}
         <div className="w-[210mm] min-h-[297mm] bg-white text-black p-12 flex flex-col justify-between print:border-none print:shadow-none print:w-full print:p-0 print:min-h-0 print:h-auto">

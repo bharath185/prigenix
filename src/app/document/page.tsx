@@ -72,7 +72,7 @@ function DocumentViewerContent() {
     <div className="min-h-screen w-full bg-[#121212] font-sans text-black flex flex-col items-center py-12 px-4 print:bg-white print:p-0">
       
       {/* Print Style Injector */}
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           body, main, div {
             background: white !important;
@@ -92,7 +92,7 @@ function DocumentViewerContent() {
             border: none !important;
           }
         }
-      `}</style>
+      `}} />
 
       {/* Dynamic Floating Action Button */}
       <div className="no-print mb-6 flex gap-4 w-full max-w-[210mm] justify-between items-center text-white">
