@@ -236,7 +236,7 @@ function DocumentViewerContent() {
                 <p className="text-justify leading-relaxed">
                   This Mutual Non-Disclosure Agreement (the "Agreement") is entered into and made effective as of 
                   <strong> {content.effectiveDate || document.date}</strong> (the "Effective Date"), by and between 
-                  <strong> {content.disclosingParty || 'Prigenix Studio'}</strong>, with principal operations listed under Prigenix Software Studio 
+                  <strong> {content.disclosingParty || 'Prigenix'}</strong>, with principal operations listed under Prigenix 
                   ("Disclosing Party"), and <strong> {content.receivingParty || document.clientName}</strong>, with offices listed at {document.clientName} 
                   ("Receiving Party"). The Disclosing Party and Receiving Party may collectively be referred to as 
                   the "Parties" or individually as a "Party."
@@ -472,7 +472,7 @@ function DocumentViewerContent() {
 
         {/* Branded Footer */}
         <footer className="border-t border-gray-100 pt-4 flex items-center justify-between text-gray-400 font-mono text-[8px] tracking-wider uppercase mt-12">
-          <span>Prigenix Software Studio</span>
+          <span>Prigenix</span>
           <span>Confidential & Proprietary Document</span>
         </footer>
       </div>

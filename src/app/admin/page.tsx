@@ -158,7 +158,7 @@ export default function AdminPage() {
   // 2. NDA Specific States
   const [effectiveDate, setEffectiveDate] = useState(new Date().toISOString().split('T')[0])
   const [governingLaw, setGoverningLaw] = useState('State of California')
-  const [disclosingParty, setDisclosingParty] = useState('Prigenix Studio')
+  const [disclosingParty, setDisclosingParty] = useState('Prigenix')
   const [receivingParty, setReceivingParty] = useState('')
   const [ndaPurpose, setNdaPurpose] = useState('Evaluating a potential collaboration and edge-sensor telemetry integration.')
 
@@ -1968,7 +1968,7 @@ export default function AdminPage() {
                   <p className="text-justify leading-relaxed">
                     This Mutual Non-Disclosure Agreement (the "Agreement") is entered into and made effective as of 
                     <strong> {effectiveDate}</strong> (the "Effective Date"), by and between 
-                    <strong> {disclosingParty}</strong>, with principal operations listed under Prigenix Software Studio 
+                    <strong> {disclosingParty}</strong>, with principal operations listed under Prigenix 
                     ("Disclosing Party"), and <strong> {receivingParty}</strong>, with offices listed at {clientName} 
                     ("Receiving Party"). The Disclosing Party and Receiving Party may collectively be referred to as 
                     the "Parties" or individually as a "Party."
@@ -2245,7 +2245,7 @@ export default function AdminPage() {
 
           {/* Branded Footer */}
           <footer className="border-t border-gray-100 pt-4 flex items-center justify-between text-gray-400 font-mono text-[8px] tracking-wider uppercase mt-8 print-border">
-            <span>Prigenix Software Studio</span>
+            <span>Prigenix</span>
             <span>Confidential & Proprietary Document</span>
           </footer>
         </div>
