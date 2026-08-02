@@ -532,7 +532,7 @@ export default function AdminPage() {
           className="relative z-10 w-full max-w-md bg-[#060A08]/85 border border-white/5 shadow-2xl rounded-3xl p-8 space-y-6 backdrop-blur-md transition-all duration-700 animate-in fade-in slide-in-from-right-12"
         >
           <div className="flex flex-col items-center text-center space-y-2">
-            <div className="h-24 w-24 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
+            <div className="h-32 w-32 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
               <img src="/logo.png" alt="Prigenix Logo" className="h-full w-full object-contain" />
             </div>
             <h2 className="font-heading text-lg font-extrabold uppercase tracking-widest text-white mt-4">
@@ -616,8 +616,8 @@ export default function AdminPage() {
         <div>
           {/* Logo header */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#0D5B3A]/30 bg-[#0A0A0A] shadow-md">
-              <img src="/logo.png" alt="Prigenix Logo" className="h-6 w-6 object-contain" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[#0D5B3A]/30 bg-[#0A0A0A] shadow-md">
+              <img src="/logo.png" alt="Prigenix Logo" className="h-9 w-9 object-contain" />
             </div>
             <div>
               <span className="font-heading text-sm font-extrabold uppercase tracking-widest block leading-none">
@@ -1831,13 +1831,13 @@ export default function AdminPage() {
             {/* Header: Branded Letterhead (Logos Only) */}
             <header className="flex items-center justify-between border-b-2 border-[#0D5B3A] pb-6 mb-8 print:border-b-2">
               {/* Left: Prigenix Logo Only (Transparent & Bigger) */}
-              <div className="h-24 w-24 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
+              <div className="h-32 w-32 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
                 <img src="/logo.png" alt="Prigenix Logo" className="h-full w-full object-contain" />
               </div>
 
               {/* Right: Client Logo (if uploaded, Transparent & Bigger) OR Document Details (if not uploaded) */}
               {clientLogoUrl ? (
-                <div className="h-24 w-32 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
+                <div className="h-32 w-44 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
                   <img src={clientLogoUrl} className="h-full w-full object-contain" alt="Client Logo" />
                 </div>
               ) : (
