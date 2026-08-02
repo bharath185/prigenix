@@ -49,12 +49,21 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'monitor' | 'quotation' | 'nda'>('monitor')
 
   // Status tracker documents state
-  const [documents, setDocuments] = useState<DocRecord[]>([
-    { id: 'PRX-2026-0040', type: 'Quotation', clientName: 'Tesla Motor Corp', subject: 'Autonomous Robotic Line Integrator', status: 'Approved', total: 4500000, date: '2026-07-28', createdBy: 'Admin' },
-    { id: 'PRX-2026-0041', type: 'NDA', clientName: 'SpaceX Aerospace', subject: 'Flight Telemetry AI Models', status: 'Sent', date: '2026-07-30', createdBy: 'Marketing' },
-    { id: 'PRX-2026-0042', type: 'Quotation', clientName: 'Hyperloop Tech', subject: 'Pneumatic Pressure Controls', status: 'Draft', total: 1850000, date: '2026-08-01', createdBy: 'Marketing' },
-    { id: 'PRX-2026-0043', type: 'Quotation', clientName: 'Acme Robotics', subject: 'Custom RAG Support Pipeline', status: 'Approved', total: 2400000, date: '2026-08-02', createdBy: 'Admin' },
-  ])
+  const [documents, setDocuments] = useState<DocRecord[]>([])
+
+  // Fetch documents from Neon PostgreSQL
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetch('/api/documents')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            setDocuments(data)
+          }
+        })
+        .catch(err => console.error('Failed to load database documents:', err))
+    }
+  }, [isLoggedIn])
 
   // Load auth state from localStorage
   useEffect(() => {
@@ -166,56 +175,82 @@ export default function AdminPage() {
   const total = subtotal 
 
   // Save Document to Tracker Database
-  const saveDocumentToTracker = () => {
-    const isDuplicate = documents.some(doc => doc.id === docId)
-    if (isDuplicate) {
-      // Update existing document
-      setDocuments(documents.map(doc => {
-        if (doc.id === docId) {
-          return {
-            ...doc,
-            clientName,
-            subject: activeTab === 'quotation' ? projectName : ndaPurpose,
-            total: activeTab === 'quotation' ? total : undefined,
-            date: docDate
+  const saveDocumentToTracker = async () => {
+    const docData = {
+      id: docId,
+      type: activeTab === 'quotation' ? 'Quotation' : 'NDA',
+      clientName,
+      subject: activeTab === 'quotation' ? projectName : ndaPurpose,
+      status: 'Draft',
+      total: activeTab === 'quotation' ? total : undefined,
+      date: docDate,
+      createdBy: userRole,
+      clientLogo: clientLogoUrl
+    }
+
+    try {
+      const res = await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(docData)
+      })
+      if (res.ok) {
+        const savedDoc = await res.json()
+        setDocuments(prev => {
+          const exists = prev.some(d => d.id === savedDoc.id)
+          if (exists) {
+            return prev.map(d => d.id === savedDoc.id ? savedDoc : d)
           }
-        }
-        return doc
-      }))
-    } else {
-      // Add new document
-      const newDoc: DocRecord = {
-        id: docId,
-        type: activeTab === 'quotation' ? 'Quotation' : 'NDA',
-        clientName,
-        subject: activeTab === 'quotation' ? projectName : ndaPurpose,
-        status: 'Draft',
-        total: activeTab === 'quotation' ? total : undefined,
-        date: docDate,
-        createdBy: userRole
+          return [savedDoc, ...prev]
+        })
       }
-      setDocuments([newDoc, ...documents])
+    } catch (err) {
+      console.error('Error saving document to database:', err)
     }
     setActiveTab('monitor')
   }
 
   // Update Document Status from Monitor Table
-  const updateDocStatus = (id: string, newStatus: 'Draft' | 'Sent' | 'Approved' | 'Declined') => {
-    setDocuments(documents.map(doc => {
-      if (doc.id === id) {
-        return { ...doc, status: newStatus }
+  const updateDocStatus = async (id: string, newStatus: 'Draft' | 'Sent' | 'Approved' | 'Declined') => {
+    const doc = documents.find(d => d.id === id)
+    if (!doc) return
+
+    const updatedData = {
+      ...doc,
+      status: newStatus
+    }
+
+    try {
+      const res = await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData)
+      })
+      if (res.ok) {
+        setDocuments(prev => prev.map(d => d.id === id ? { ...d, status: newStatus } : d))
       }
-      return doc
-    }))
+    } catch (err) {
+      console.error('Error updating document status:', err)
+    }
   }
 
   // Delete Document (Admin Only Action)
-  const deleteDocument = (id: string) => {
+  const deleteDocument = async (id: string) => {
     if (userRole !== 'Admin') {
       alert('Permission Denied: Administrator clearance is required to delete records.')
       return
     }
-    setDocuments(documents.filter(doc => doc.id !== id))
+
+    try {
+      const res = await fetch(`/api/documents?id=${id}`, {
+        method: 'DELETE'
+      })
+      if (res.ok) {
+        setDocuments(documents.filter(doc => doc.id !== id))
+      }
+    } catch (err) {
+      console.error('Error deleting document:', err)
+    }
   }
 
   // Print Document Trigger
@@ -713,6 +748,7 @@ export default function AdminPage() {
                               setDocId(doc.id)
                               setClientName(doc.clientName)
                               setDocDate(doc.date)
+                              setClientLogoUrl(doc.clientLogo || null) // Load the saved Base64 logo!
                               if (doc.type === 'Quotation') {
                                 setProjectName(doc.subject)
                                 setActiveTab('quotation')
