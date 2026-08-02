@@ -1841,13 +1841,13 @@ export default function AdminPage() {
               {activeTab === 'quotation' && (
                 <div className="space-y-6">
                   {clientLogoUrl && (
-                    <div className="flex justify-between items-start">
-                      <div>
+                    <div className="grid grid-cols-3 gap-6 items-start">
+                      <div className="col-span-2 space-y-1">
                         <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
                           Prepared For
                         </h5>
                         <p className="font-bold text-sm text-black">{clientName}</p>
-                        <p className="text-gray-500 font-medium">{clientAddress}</p>
+                        <p className="text-gray-500 font-medium break-words whitespace-pre-wrap">{clientAddress}</p>
                       </div>
                       <div className="text-right">
                         <h2 className="font-heading text-sm font-bold uppercase tracking-wide text-[#0D5B3A] leading-none mb-2">
@@ -1944,8 +1944,8 @@ export default function AdminPage() {
               {activeTab === 'nda' && (
                 <div className="space-y-6">
                   {clientLogoUrl && (
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
+                    <div className="grid grid-cols-3 gap-6 items-start mb-6">
+                      <div className="col-span-2 space-y-1">
                         <span className="font-mono text-[8px] text-gray-400 block uppercase tracking-widest">Parties</span>
                         <p className="font-bold text-xs text-black">Disclosing: {disclosingParty}</p>
                         <p className="font-bold text-xs text-black">Receiving: {receivingParty}</p>
@@ -2029,13 +2029,13 @@ export default function AdminPage() {
               {activeTab === 'service' && (
                 <div className="space-y-6">
                   {clientLogoUrl && (
-                    <div className="flex justify-between items-start">
-                      <div>
+                    <div className="grid grid-cols-3 gap-6 items-start">
+                      <div className="col-span-2 space-y-1">
                         <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
                           Service Client
                         </h5>
                         <p className="font-bold text-sm text-black">{clientName}</p>
-                        <p className="text-gray-500 font-medium">{clientAddress}</p>
+                        <p className="text-gray-500 font-medium break-words whitespace-pre-wrap">{clientAddress}</p>
                       </div>
                       <div className="text-right">
                         <h2 className="font-heading text-sm font-bold uppercase tracking-wide text-[#0D5B3A] leading-none mb-2">
