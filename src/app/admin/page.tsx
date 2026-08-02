@@ -144,7 +144,7 @@ export default function AdminPage() {
   const [clientName, setClientName] = useState('')
   const [clientAddress, setClientAddress] = useState('')
   const [docDate, setDocDate] = useState(new Date().toISOString().split('T')[0])
-  const [docId, setDocId] = useState('PRX-2026-0044')
+  const [docId, setDocId] = useState(() => `PRX-QT-2026-${Math.floor(1000 + Math.random() * 9000)}`)
   const [clientLogoUrl, setClientLogoUrl] = useState<string | null>(null)
 
   // 1. Quotation Specific States
@@ -656,7 +656,10 @@ export default function AdminPage() {
               Builders
             </div>
             <button
-              onClick={() => setActiveTab('quotation')}
+              onClick={() => {
+                setDocId(`PRX-QT-2026-${Math.floor(1000 + Math.random() * 9000)}`)
+                setActiveTab('quotation')
+              }}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'quotation' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
               }`}
@@ -665,7 +668,10 @@ export default function AdminPage() {
               Quotation
             </button>
             <button
-              onClick={() => setActiveTab('nda')}
+              onClick={() => {
+                setDocId(`PRX-ND-2026-${Math.floor(1000 + Math.random() * 9000)}`)
+                setActiveTab('nda')
+              }}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'nda' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
               }`}
@@ -674,7 +680,10 @@ export default function AdminPage() {
               NDA Agreement
             </button>
             <button
-              onClick={() => setActiveTab('service')}
+              onClick={() => {
+                setDocId(`PRX-SV-2026-${Math.floor(1000 + Math.random() * 9000)}`)
+                setActiveTab('service')
+              }}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'service' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
               }`}
@@ -683,7 +692,10 @@ export default function AdminPage() {
               Service SLA
             </button>
             <button
-              onClick={() => setActiveTab('kickoff')}
+              onClick={() => {
+                setDocId(`PRX-KO-2026-${Math.floor(1000 + Math.random() * 9000)}`)
+                setActiveTab('kickoff')
+              }}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'kickoff' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
               }`}
@@ -692,7 +704,10 @@ export default function AdminPage() {
               Kickoff Requirements
             </button>
             <button
-              onClick={() => setActiveTab('techstack')}
+              onClick={() => {
+                setDocId(`PRX-TS-2026-${Math.floor(1000 + Math.random() * 9000)}`)
+                setActiveTab('techstack')
+              }}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'techstack' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
               }`}
