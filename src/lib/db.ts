@@ -26,6 +26,17 @@ export async function initDb() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+    
+    CREATE TABLE IF NOT EXISTS clients (
+      id SERIAL PRIMARY KEY,
+      company_name VARCHAR(255) UNIQUE NOT NULL,
+      contact_name VARCHAR(255) NOT NULL,
+      contact_email VARCHAR(255) NOT NULL,
+      contact_phone VARCHAR(50),
+      tax_id VARCHAR(100),
+      status VARCHAR(50) NOT NULL DEFAULT 'Onboarding',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
   `
   const alterQuery = `
     ALTER TABLE documents ALTER COLUMN type TYPE VARCHAR(50);
