@@ -485,7 +485,7 @@ export default function AdminPage() {
                         {doc.subject}
                       </td>
                       <td className="py-4 px-5 text-right font-mono text-[#C8A870] font-bold">
-                        {doc.total ? `$${doc.total.toLocaleString()}` : '—'}
+                        {doc.total ? `₹${doc.total.toLocaleString()}` : '—'}
                       </td>
                       <td className="py-4 px-5">
                         <select
@@ -735,7 +735,7 @@ export default function AdminPage() {
                               />
                             </div>
                             <div className="relative flex items-center">
-                              <span className="absolute left-2.5 font-mono text-[10px] text-text-muted">Rate ($):</span>
+                              <span className="absolute left-2.5 font-mono text-[10px] text-text-muted">Rate (₹):</span>
                               <input
                                 type="number"
                                 value={item.rate}
@@ -956,9 +956,9 @@ export default function AdminPage() {
                           <tr key={item.id} className="border-b border-gray-100 font-sans print-border">
                             <td className="py-3 font-semibold text-black">{item.title}</td>
                             <td className="py-3 text-center font-mono text-gray-600">{item.qty}</td>
-                            <td className="py-3 text-right font-mono text-gray-600">${item.rate.toLocaleString()}</td>
+                            <td className="py-3 text-right font-mono text-gray-600">₹{item.rate.toLocaleString()}</td>
                             <td className="py-3 text-right font-mono text-black font-semibold">
-                              ${(item.qty * item.rate).toLocaleString()}
+                              ₹{(item.qty * item.rate).toLocaleString()}
                             </td>
                           </tr>
                         ))}
@@ -971,15 +971,15 @@ export default function AdminPage() {
                     <div className="w-64 space-y-2 border-t border-gray-100 pt-4 print-border">
                       <div className="flex justify-between font-mono text-[10px] text-gray-500">
                         <span>Scope Subtotal:</span>
-                        <span>${subtotal.toLocaleString()}</span>
+                        <span>₹{subtotal.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between font-mono text-[10px] text-gray-500">
                         <span>Provision Tax (0.0%):</span>
-                        <span>$0.00</span>
+                        <span>₹0.00</span>
                       </div>
                       <div className="flex justify-between border-t border-[#0D5B3A] pt-2 font-heading text-sm font-bold text-black print-border">
                         <span>TOTAL PROPOSAL:</span>
-                        <span className="text-[#0D5B3A] font-extrabold">${total.toLocaleString()} USD</span>
+                        <span className="text-[#0D5B3A] font-extrabold">₹{total.toLocaleString()} INR</span>
                       </div>
                     </div>
                   </div>
