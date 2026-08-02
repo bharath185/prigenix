@@ -14,7 +14,7 @@ export async function initDb() {
   const queryText = `
     CREATE TABLE IF NOT EXISTS documents (
       id VARCHAR(50) PRIMARY KEY,
-      type VARCHAR(20) NOT NULL,
+      type VARCHAR(50) NOT NULL,
       client_name VARCHAR(255) NOT NULL,
       subject TEXT NOT NULL,
       status VARCHAR(20) NOT NULL,
@@ -22,13 +22,19 @@ export async function initDb() {
       date VARCHAR(50) NOT NULL,
       created_by VARCHAR(50) NOT NULL,
       client_logo TEXT,
+      content TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `
+  const alterQuery = `
+    ALTER TABLE documents ALTER COLUMN type TYPE VARCHAR(50);
+    ALTER TABLE documents ADD COLUMN IF NOT EXISTS content TEXT;
+  `
   try {
     const client = await pool.connect()
     await client.query(queryText)
+    await client.query(alterQuery)
     client.release()
     console.log('Database initialized successfully')
   } catch (error) {

@@ -10,17 +10,19 @@ import {
   Trash2, 
   Lock, 
   User, 
-  DollarSign, 
   CheckCircle2, 
   AlertCircle,
-  Building,
   Upload,
   LayoutDashboard,
   ShieldAlert,
   TrendingUp,
   Award,
   Clock,
-  Briefcase
+  Briefcase,
+  Link2,
+  ListTodo,
+  Cpu,
+  Layers
 } from 'lucide-react'
 
 // Simple client-side auth credentials for multiple roles
@@ -31,13 +33,15 @@ const CREDENTIALS = {
 
 interface DocRecord {
   id: string
-  type: 'Quotation' | 'NDA'
+  type: 'Quotation' | 'NDA' | 'Service Agreement' | 'Kickoff Requirement' | 'Techstack'
   clientName: string
   subject: string
   status: 'Draft' | 'Sent' | 'Approved' | 'Declined'
   total?: number
   date: string
   createdBy: 'Admin' | 'Marketing'
+  clientLogo?: string | null
+  content?: string | null
 }
 
 export default function AdminPage() {
@@ -46,7 +50,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState('')
   const [userRole, setUserRole] = useState<'Admin' | 'Marketing'>('Marketing')
   const [loginError, setLoginError] = useState('')
-  const [activeTab, setActiveTab] = useState<'monitor' | 'quotation' | 'nda'>('monitor')
+  const [activeTab, setActiveTab] = useState<'monitor' | 'quotation' | 'nda' | 'service' | 'kickoff' | 'techstack'>('monitor')
 
   // Status tracker documents state
   const [documents, setDocuments] = useState<DocRecord[]>([])
@@ -106,14 +110,14 @@ export default function AdminPage() {
     setPassword('')
   }
 
-  // Document states
+  // Common Document Metadata
   const [clientName, setClientName] = useState('Tesla Motor Corp')
   const [clientAddress, setClientAddress] = useState('3500 Deer Creek Road, Palo Alto, CA 94304')
   const [docDate, setDocDate] = useState(new Date().toISOString().split('T')[0])
   const [docId, setDocId] = useState('PRX-2026-0044')
   const [clientLogoUrl, setClientLogoUrl] = useState<string | null>(null)
 
-  // Quotation Specific States
+  // 1. Quotation Specific States
   const [projectName, setProjectName] = useState('Autonomous Robotic Line Integrator')
   const [projectDescription, setProjectDescription] = useState('Custom development of edge-computing logic to monitor factory line conveyor speeds and automatically coordinate motor controllers via TCP/IP protocols.')
   const [quoteItems, setQuoteItems] = useState([
@@ -122,14 +126,43 @@ export default function AdminPage() {
     { id: 3, title: 'Fail-Safe Motor Trigger Logic', qty: 1, rate: 1000000 },
   ])
 
-  // NDA Specific States
+  // 2. NDA Specific States
   const [effectiveDate, setEffectiveDate] = useState(new Date().toISOString().split('T')[0])
   const [governingLaw, setGoverningLaw] = useState('State of California')
   const [disclosingParty, setDisclosingParty] = useState('Prigenix Studio')
   const [receivingParty, setReceivingParty] = useState('Tesla Motor Corp')
-  const [ndaPurpose, setNdaPurpose] = useState('Evaluating a potential custom software development collaboration and edge-sensor telemetry integration.')
+  const [ndaPurpose, setNdaPurpose] = useState('Evaluating a potential collaboration and edge-sensor telemetry integration.')
 
-  // Client Logo Upload conversion to Base64 data URL
+  // 3. Service Agreement Specific States
+  const [serviceTotal, setServiceTotal] = useState(5000000)
+  const [milestones, setMilestones] = useState([
+    { title: 'Project Kickoff & Environment Setup', percentage: 30 },
+    { title: 'Alpha Release & Sensor Integration', percentage: 40 },
+    { title: 'Final Handover & Client Training', percentage: 30 },
+  ])
+
+  // 4. Kickoff Requirement Specific States
+  const [kickoffObjective, setKickoffObjective] = useState('Sync industrial sensors with the central dashboard and deploy edge server clusters.')
+  const [checklist, setChecklist] = useState([
+    { title: 'Configure TCP/IP edge sensor scripts', status: 'Pending' },
+    { title: 'Synchronize central Neon DB pools', status: 'Pending' },
+    { title: 'Run high-load telemetry diagnostics', status: 'Pending' },
+  ])
+  const [sprintKickoff, setSprintKickoff] = useState('Week 1')
+  const [sprintDesign, setSprintDesign] = useState('Week 2')
+  const [sprintDev, setSprintDev] = useState('Week 3-6')
+  const [sprintTest, setSprintTest] = useState('Week 7')
+  const [sprintLaunch, setSprintLaunch] = useState('Week 8')
+
+  // 5. Techstack Specific States
+  const [stackClient, setStackClient] = useState('Next.js 16 / React 19 / TypeScript')
+  const [stackServer, setStackServer] = useState('Next.js API Serverless Routes')
+  const [stackDb, setStackDb] = useState('Neon AWS Serverless PostgreSQL')
+  const [stackHost, setStackHost] = useState('Vercel Edge Platform CDN')
+  const [stackAi, setStackAi] = useState('Google Gemini 2.0 Pro')
+  const [stackAuth, setStackAuth] = useState('Credentials Browser LocalStorage')
+
+  // Client Logo Upload conversion to Base64
   const handleClientLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -139,11 +172,6 @@ export default function AdminPage() {
       }
       reader.readAsDataURL(file)
     }
-  }
-
-  // Remove Client Logo
-  const clearClientLogo = () => {
-    setClientLogoUrl(null)
   }
 
   // Add Item to Quotation
@@ -170,22 +198,88 @@ export default function AdminPage() {
     }))
   }
 
+  // Dynamic Service Milestones
+  const updateMilestone = (index: number, field: 'title' | 'percentage', value: any) => {
+    const nextMilestones = [...milestones]
+    nextMilestones[index] = {
+      ...nextMilestones[index],
+      [field]: field === 'percentage' ? Number(value) : value
+    }
+    setMilestones(nextMilestones)
+  }
+
+  const addMilestone = () => {
+    setMilestones([...milestones, { title: 'New Payment Milestone', percentage: 10 }])
+  }
+
+  const removeMilestone = (index: number) => {
+    setMilestones(milestones.filter((_, i) => i !== index))
+  }
+
+  // Dynamic Kickoff Checklist
+  const updateChecklistItem = (index: number, field: 'title' | 'status', value: any) => {
+    const nextChecklist = [...checklist]
+    nextChecklist[index] = {
+      ...nextChecklist[index],
+      [field]: value
+    }
+    setChecklist(nextChecklist)
+  }
+
+  const addChecklistItem = () => {
+    setChecklist([...checklist, { title: 'New Requirement item', status: 'Pending' }])
+  }
+
+  const removeChecklistItem = (index: number) => {
+    setChecklist(checklist.filter((_, i) => i !== index))
+  }
+
   // Calculate Quotation Totals
   const subtotal = quoteItems.reduce((sum, item) => sum + (item.qty * item.rate), 0)
   const total = subtotal 
 
-  // Save Document to Tracker Database
+  // Save Document to Neon PostgreSQL Tracker
   const saveDocumentToTracker = async () => {
+    let contentPayload: any = {}
+    let subject = ''
+    let documentTotal: number | undefined = undefined
+    let typeName: 'Quotation' | 'NDA' | 'Service Agreement' | 'Kickoff Requirement' | 'Techstack' = 'Quotation'
+
+    if (activeTab === 'quotation') {
+      typeName = 'Quotation'
+      subject = projectName
+      documentTotal = total
+      contentPayload = { quoteItems, projectDescription, clientAddress }
+    } else if (activeTab === 'nda') {
+      typeName = 'NDA'
+      subject = ndaPurpose
+      contentPayload = { effectiveDate, governingLaw, disclosingParty, receivingParty }
+    } else if (activeTab === 'service') {
+      typeName = 'Service Agreement'
+      subject = projectName
+      documentTotal = serviceTotal
+      contentPayload = { milestones, clientAddress, governingLaw }
+    } else if (activeTab === 'kickoff') {
+      typeName = 'Kickoff Requirement'
+      subject = kickoffObjective
+      contentPayload = { checklist, sprintKickoff, sprintDesign, sprintDev, sprintTest, sprintLaunch }
+    } else if (activeTab === 'techstack') {
+      typeName = 'Techstack'
+      subject = projectName
+      contentPayload = { stackClient, stackServer, stackDb, stackHost, stackAi, stackAuth }
+    }
+
     const docData = {
       id: docId,
-      type: activeTab === 'quotation' ? 'Quotation' : 'NDA',
+      type: typeName,
       clientName,
-      subject: activeTab === 'quotation' ? projectName : ndaPurpose,
+      subject,
       status: 'Draft',
-      total: activeTab === 'quotation' ? total : undefined,
+      total: documentTotal,
       date: docDate,
       createdBy: userRole,
-      clientLogo: clientLogoUrl
+      clientLogo: clientLogoUrl,
+      content: JSON.stringify(contentPayload)
     }
 
     try {
@@ -253,6 +347,15 @@ export default function AdminPage() {
     }
   }
 
+  // Copy Public Share Link to Clipboard
+  const copyShareLink = (id: string) => {
+    const origin = window.location.origin
+    const shareUrl = `${origin}/document?id=${id}`
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => alert(`Secure public link copied to clipboard:\n${shareUrl}`))
+      .catch(err => console.error('Failed to copy link:', err))
+  }
+
   // Print Document Trigger
   const triggerPrint = () => {
     window.print()
@@ -260,7 +363,7 @@ export default function AdminPage() {
 
   // Metrics computations
   const totalPipeline = documents
-    .filter(d => d.type === 'Quotation' && (d.status === 'Approved' || d.status === 'Sent'))
+    .filter(d => (d.type === 'Quotation' || d.type === 'Service Agreement') && (d.status === 'Approved' || d.status === 'Sent'))
     .reduce((sum, d) => sum + (d.total || 0), 0)
 
   const approvedQuotesCount = documents.filter(d => d.type === 'Quotation' && d.status === 'Approved').length
@@ -278,9 +381,9 @@ export default function AdminPage() {
     Declined: documents.filter(d => d.status === 'Declined').length,
   }
 
-  // Bar Chart calculations: Top 4 Quotation Revenues
+  // Bar Chart calculations
   const barChartData = documents
-    .filter(d => d.type === 'Quotation' && d.total)
+    .filter(d => d.total)
     .map(d => ({
       name: d.clientName.split(' ')[0],
       amount: d.total || 0,
@@ -289,88 +392,6 @@ export default function AdminPage() {
     .slice(0, 4)
 
   const maxAmount = barChartData.length > 0 ? Math.max(...barChartData.map(b => b.amount)) : 1
-
-  if (!isLoggedIn) {
-    return (
-      <main className="relative flex min-h-screen w-full items-center justify-center bg-[#0A0A0A] px-4 font-sans text-white">
-        {/* Background Gradients */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(13,91,58,0.15),transparent_60%)]" />
-        
-        <div className="relative z-10 w-full max-w-md">
-          {/* Logo Mark */}
-          <div className="mb-8 flex flex-col items-center gap-3">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#0D5B3A]/30 bg-[#060A08]/80 shadow-[0_0_20px_rgba(13,91,58,0.2)]">
-              <img src="/logo.png" alt="Prigenix" className="h-10 w-10 object-contain" />
-            </div>
-            <h1 className="font-heading text-2xl font-extrabold uppercase tracking-widest text-white">
-              Prigenix Studio
-            </h1>
-            <span className="font-mono text-xs uppercase tracking-wider text-accent-cyan">
-              Admin & Marketing Document Portal
-            </span>
-          </div>
-
-          {/* Login Card */}
-          <form 
-            onSubmit={handleLogin}
-            className="rounded-3xl border border-[#C8A870]/25 bg-[#060A08]/85 p-8 shadow-[0_20px_50px_rgba(0,0,0,0.85)] shadow-[#C8A870]/5 backdrop-blur-2xl"
-          >
-            <h2 className="mb-6 font-heading text-lg font-bold text-white">
-              Authentication Portal
-            </h2>
-
-            {loginError && (
-              <div className="mb-5 flex items-center gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 p-3.5 font-mono text-xs text-red-400">
-                <AlertCircle size={16} />
-                {loginError}
-              </div>
-            )}
-
-            <div className="space-y-4">
-              {/* Username Input */}
-              <div className="space-y-2">
-                <label className="font-mono text-xs text-text-muted">Username</label>
-                <div className="relative flex items-center">
-                  <User size={16} className="absolute left-4 text-text-muted" />
-                  <input
-                    type="text"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="admin or marketing"
-                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3.5 pl-11 pr-4 font-sans text-sm text-white placeholder-white/30 outline-none focus:border-accent-cyan/50 focus:bg-white/[0.08] transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Password Input */}
-              <div className="space-y-2">
-                <label className="font-mono text-xs text-text-muted">Password</label>
-                <div className="relative flex items-center">
-                  <Lock size={16} className="absolute left-4 text-text-muted" />
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3.5 pl-11 pr-4 font-sans text-sm text-white placeholder-white/30 outline-none focus:border-accent-cyan/50 focus:bg-white/[0.08] transition-all"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="mt-8 w-full cursor-pointer rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan py-3.5 font-heading text-sm font-extrabold uppercase tracking-widest text-white shadow-[0_4px_20px_rgba(139,92,246,0.3)] hover:brightness-110 active:scale-98 transition-all"
-            >
-              Authenticate
-            </button>
-          </form>
-        </div>
-      </main>
-    )
-  }
 
   return (
     <main className="min-h-screen w-full bg-[#0A0A0A] font-sans text-white antialiased flex flex-col md:flex-row print:bg-white print:text-black print:min-h-0">
@@ -400,18 +421,6 @@ export default function AdminPage() {
             box-shadow: none !important;
             border: none !important;
           }
-          .print-text-dark {
-            color: #111111 !important;
-          }
-          .print-text-muted {
-            color: #555555 !important;
-          }
-          .print-border {
-            border-color: #cccccc !important;
-          }
-          .print-bg-header {
-            background-color: #f7f9f8 !important;
-          }
         }
       `}</style>
 
@@ -438,9 +447,7 @@ export default function AdminPage() {
             <button
               onClick={() => setActiveTab('monitor')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activeTab === 'monitor' 
-                  ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' 
-                  : 'text-text-muted hover:bg-white/5'
+                activeTab === 'monitor' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
               }`}
             >
               <LayoutDashboard size={16} />
@@ -449,9 +456,7 @@ export default function AdminPage() {
             <button
               onClick={() => setActiveTab('quotation')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activeTab === 'quotation' 
-                  ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' 
-                  : 'text-text-muted hover:bg-white/5'
+                activeTab === 'quotation' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
               }`}
             >
               <FileText size={16} />
@@ -460,13 +465,38 @@ export default function AdminPage() {
             <button
               onClick={() => setActiveTab('nda')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activeTab === 'nda' 
-                  ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' 
-                  : 'text-text-muted hover:bg-white/5'
+                activeTab === 'nda' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
               }`}
             >
               <FileSignature size={16} />
               NDA Agreement
+            </button>
+            <button
+              onClick={() => setActiveTab('service')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                activeTab === 'service' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
+              }`}
+            >
+              <Layers size={16} />
+              Service Agreement
+            </button>
+            <button
+              onClick={() => setActiveTab('kickoff')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                activeTab === 'kickoff' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
+              }`}
+            >
+              <ListTodo size={16} />
+              Kickoff Details
+            </button>
+            <button
+              onClick={() => setActiveTab('techstack')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                activeTab === 'techstack' ? 'bg-[#0D5B3A] text-white border border-[#0D5B3A]/30' : 'text-text-muted hover:bg-white/5'
+              }`}
+            >
+              <Cpu size={16} />
+              Techstack Specs
             </button>
           </div>
         </div>
@@ -480,7 +510,7 @@ export default function AdminPage() {
               </div>
               <div>
                 <span className="font-sans text-xs font-bold block text-white">{userRole} Panel</span>
-                <span className="font-mono text-[9px] text-text-muted">Auth: Credentials</span>
+                <span className="font-mono text-[9px] text-text-muted">Auth: Neon DB Connected</span>
               </div>
             </div>
           </div>
@@ -503,31 +533,16 @@ export default function AdminPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-heading text-2xl font-extrabold tracking-tight text-white uppercase leading-none mb-1">
-                  Document Tracker Dashboard
+                  Document Database Dashboard
                 </h2>
-                <p className="font-mono text-xs text-text-muted">
-                  Log role: <span className="text-accent-cyan">{userRole}</span>
+                <p className="font-mono text-xs text-text-muted font-bold text-accent-cyan">
+                  Persistent Storage Live via AWS Neon Pool
                 </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setActiveTab('quotation')}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
-                >
-                  <Plus size={14} /> Quotation
-                </button>
-                <button
-                  onClick={() => setActiveTab('nda')}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-heading text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
-                >
-                  <Plus size={14} /> NDA
-                </button>
               </div>
             </div>
 
             {/* Metrics cards grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Total pipeline card */}
               <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 text-[#0D5B3A]">
                   <TrendingUp size={24} />
@@ -536,10 +551,9 @@ export default function AdminPage() {
                 <h3 className="font-heading text-lg font-extrabold mt-2 text-white">
                   ₹{totalPipeline.toLocaleString()}
                 </h3>
-                <span className="font-mono text-[9px] text-[#C8A870] block mt-1">Approved & Sent Quotes</span>
+                <span className="font-mono text-[9px] text-[#C8A870] block mt-1">Approved & Sent Milestones</span>
               </div>
 
-              {/* Conversion rate card */}
               <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 text-accent-purple">
                   <Award size={24} />
@@ -551,7 +565,6 @@ export default function AdminPage() {
                 <span className="font-mono text-[9px] text-accent-cyan block mt-1">{approvedQuotesCount} of {totalQuotesCount} approved</span>
               </div>
 
-              {/* Active NDAs card */}
               <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 text-accent-cyan">
                   <Clock size={24} />
@@ -560,26 +573,23 @@ export default function AdminPage() {
                 <h3 className="font-heading text-lg font-extrabold mt-2 text-white">
                   {activeNDAs}
                 </h3>
-                <span className="font-mono text-[9px] text-text-muted block mt-1">Sent or Signed</span>
+                <span className="font-mono text-[9px] text-text-muted block mt-1">Sent or Signed Agreements</span>
               </div>
 
-              {/* Total volume card */}
               <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 text-text-muted">
                   <Briefcase size={24} />
                 </div>
-                <span className="font-mono text-[9px] uppercase tracking-widest text-text-muted">Total Registry</span>
+                <span className="font-mono text-[9px] uppercase tracking-widest text-text-muted">Database Total</span>
                 <h3 className="font-heading text-lg font-extrabold mt-2 text-white">
                   {totalDocsCount}
                 </h3>
-                <span className="font-mono text-[9px] text-text-muted block mt-1">Stored Documents</span>
+                <span className="font-mono text-[9px] text-text-muted block mt-1">Persistent Documents</span>
               </div>
             </div>
 
             {/* Graphs & charts row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* Chart 1: Revenue by Client (Bar Chart SVG) */}
               <div className="rounded-3xl border border-white/5 bg-[#060A08]/65 p-6 shadow-2xl">
                 <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-[#C8A870] mb-6">
                   Quotation Revenue by Client
@@ -589,16 +599,13 @@ export default function AdminPage() {
                     const pct = Math.max(12, Math.round((bar.amount / maxAmount) * 100))
                     return (
                       <div key={i} className="flex flex-col items-center w-12 group relative">
-                        {/* Tooltip on Hover */}
                         <div className="absolute bottom-full mb-2 bg-[#0A0A0A] border border-white/10 rounded-md py-1 px-2 font-mono text-[9px] text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-lg">
                           ₹{(bar.amount).toLocaleString()}
                         </div>
-                        {/* Interactive Bar */}
                         <div 
                           style={{ height: `${pct}%` }} 
                           className="w-8 rounded-t-lg bg-gradient-to-t from-accent-purple to-accent-cyan shadow-[0_0_15px_rgba(139,92,246,0.35)] group-hover:brightness-110 transition-all duration-500"
                         />
-                        {/* Client name under bar */}
                         <span className="font-mono text-[9px] text-text-muted mt-2 truncate w-14 text-center">
                           {bar.name}
                         </span>
@@ -607,26 +614,20 @@ export default function AdminPage() {
                   })}
                   {barChartData.length === 0 && (
                     <div className="absolute inset-0 flex items-center justify-center font-sans text-xs text-text-muted">
-                      No quotations recorded.
+                      No records found in database.
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Chart 2: Status Distribution (Donut Chart SVG) */}
               <div className="rounded-3xl border border-white/5 bg-[#060A08]/65 p-6 shadow-2xl flex flex-col justify-between">
                 <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-[#C8A870] mb-4">
                   Document Status Distribution
                 </h3>
                 <div className="flex flex-row items-center justify-around gap-4 flex-1">
-                  
-                  {/* SVG Donut Circle Ring */}
                   <div className="relative h-32 w-32 shrink-0">
                     <svg viewBox="0 0 36 36" className="h-full w-full">
-                      {/* Grey Base */}
                       <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
-                      
-                      {/* Dynamic Colored Segment Rings (Simplifying into structured rings) */}
                       {totalDocsCount > 0 && (() => {
                         let offset = 0
                         return Object.entries(statusCounts).map(([status, count], i) => {
@@ -635,11 +636,10 @@ export default function AdminPage() {
                           const dash = `${share} ${100 - share}`
                           const currentOffset = offset
                           offset += share
-                          
-                          let strokeColor = '#FFC107' // yellow Draft
-                          if (status === 'Approved') strokeColor = '#10B981' // green Approved
-                          if (status === 'Sent') strokeColor = '#06B6D4' // cyan Sent
-                          if (status === 'Declined') strokeColor = '#EF4444' // red Declined
+                          let strokeColor = '#FFC107'
+                          if (status === 'Approved') strokeColor = '#10B981'
+                          if (status === 'Sent') strokeColor = '#06B6D4'
+                          if (status === 'Declined') strokeColor = '#EF4444'
 
                           return (
                             <circle
@@ -659,15 +659,12 @@ export default function AdminPage() {
                         })
                       })()}
                     </svg>
-                    
-                    {/* Inner centered text */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
                       <span className="font-heading text-lg font-extrabold text-white">{totalDocsCount}</span>
                       <span className="font-mono text-[8px] text-text-muted uppercase mt-0.5">Docs</span>
                     </div>
                   </div>
 
-                  {/* Ring Legend Panel */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 font-mono text-[9px] text-white">
                       <div className="h-2 w-2 rounded-full bg-[#10B981]" />
@@ -686,10 +683,8 @@ export default function AdminPage() {
                       <span>Declined: <strong className="text-white">{statusCounts.Declined}</strong></span>
                     </div>
                   </div>
-
                 </div>
               </div>
-
             </div>
 
             {/* Document list table */}
@@ -711,12 +706,7 @@ export default function AdminPage() {
                     <tr key={doc.id} className="hover:bg-white/[0.01] transition-colors">
                       <td className="py-4 px-5 font-mono text-text-muted">{doc.id}</td>
                       <td className="py-4 px-5">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-mono text-[9px] uppercase font-bold ${
-                          doc.type === 'Quotation' 
-                            ? 'bg-[#0D5B3A]/20 text-accent-cyan border border-[#0D5B3A]/20' 
-                            : 'bg-[#C8A870]/20 text-[#C8A870] border border-[#C8A870]/20'
-                        }`}>
-                          {doc.type === 'Quotation' ? <FileText size={10} /> : <FileSignature size={10} />}
+                        <span className="font-mono text-[9px] uppercase tracking-wider block text-[#C8A870]">
                           {doc.type}
                         </span>
                       </td>
@@ -741,20 +731,61 @@ export default function AdminPage() {
                       </td>
                       <td className="py-4 px-5 text-center">
                         <div className="flex items-center justify-center gap-2">
+                          {/* Print Action */}
                           <button
                             type="button"
                             onClick={() => {
-                              // Load document values into form states for printing
                               setDocId(doc.id)
                               setClientName(doc.clientName)
                               setDocDate(doc.date)
-                              setClientLogoUrl(doc.clientLogo || null) // Load the saved Base64 logo!
+                              setClientLogoUrl(doc.clientLogo || null)
+                              
+                              // Parse content json
+                              let parsed: any = {}
+                              try {
+                                if (doc.content) parsed = JSON.parse(doc.content)
+                              } catch (err) {
+                                console.error(err)
+                              }
+
                               if (doc.type === 'Quotation') {
                                 setProjectName(doc.subject)
+                                setProjectDescription(parsed.projectDescription || '')
+                                setQuoteItems(parsed.quoteItems || [])
+                                setClientAddress(parsed.clientAddress || '')
                                 setActiveTab('quotation')
-                              } else {
+                              } else if (doc.type === 'NDA') {
                                 setNdaPurpose(doc.subject)
+                                setEffectiveDate(parsed.effectiveDate || doc.date)
+                                setGoverningLaw(parsed.governingLaw || '')
+                                setDisclosingParty(parsed.disclosingParty || '')
+                                setReceivingParty(parsed.receivingParty || '')
                                 setActiveTab('nda')
+                              } else if (doc.type === 'Service Agreement') {
+                                setProjectName(doc.subject)
+                                setServiceTotal(doc.total || 0)
+                                setMilestones(parsed.milestones || [])
+                                setClientAddress(parsed.clientAddress || '')
+                                setGoverningLaw(parsed.governingLaw || '')
+                                setActiveTab('service')
+                              } else if (doc.type === 'Kickoff Requirement') {
+                                setKickoffObjective(doc.subject)
+                                setChecklist(parsed.checklist || [])
+                                setSprintKickoff(parsed.sprintKickoff || '')
+                                setSprintDesign(parsed.sprintDesign || '')
+                                setSprintDev(parsed.sprintDev || '')
+                                setSprintTest(parsed.sprintTest || '')
+                                setSprintLaunch(parsed.sprintLaunch || '')
+                                setActiveTab('kickoff')
+                              } else if (doc.type === 'Techstack') {
+                                setProjectName(doc.subject)
+                                setStackClient(parsed.stackClient || '')
+                                setStackServer(parsed.stackServer || '')
+                                setStackDb(parsed.stackDb || '')
+                                setStackHost(parsed.stackHost || '')
+                                setStackAi(parsed.stackAi || '')
+                                setStackAuth(parsed.stackAuth || '')
+                                setActiveTab('techstack')
                               }
                             }}
                             className="p-1.5 rounded bg-white/5 border border-white/5 hover:border-accent-cyan/30 text-accent-cyan transition-all cursor-pointer"
@@ -762,8 +793,18 @@ export default function AdminPage() {
                           >
                             <Printer size={13} />
                           </button>
+
+                          {/* Share Link Action */}
+                          <button
+                            type="button"
+                            onClick={() => copyShareLink(doc.id)}
+                            className="p-1.5 rounded bg-white/5 border border-white/5 hover:border-accent-purple/30 text-accent-purple transition-all cursor-pointer"
+                            title="Copy Shareable Link"
+                          >
+                            <Link2 size={13} />
+                          </button>
                           
-                          {/* Delete Action (RBAC check for Admin role) */}
+                          {/* Delete Action */}
                           <button
                             type="button"
                             disabled={userRole !== 'Admin'}
@@ -773,7 +814,7 @@ export default function AdminPage() {
                                 ? 'bg-red-500/5 border-red-500/10 hover:border-red-500/30 text-red-400 cursor-pointer' 
                                 : 'opacity-40 bg-gray-500/5 border-gray-500/10 text-gray-500 cursor-not-allowed'
                             }`}
-                            title={userRole === 'Admin' ? 'Delete Record' : 'Admin clearance required to delete'}
+                            title={userRole === 'Admin' ? 'Delete Record' : 'Admin clearance required'}
                           >
                             <Trash2 size={13} />
                           </button>
@@ -781,6 +822,13 @@ export default function AdminPage() {
                       </td>
                     </tr>
                   ))}
+                  {documents.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="py-8 text-center text-text-muted font-mono text-xs">
+                        No documents stored in PostgreSQL.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -796,7 +844,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* VIEW: DOCUMENT GENERATOR FORMS (taking full screen width) */}
+        {/* VIEW: DOCUMENT GENERATOR FORMS */}
         {activeTab !== 'monitor' && (
           <div className="max-w-4xl space-y-6">
             <div className="flex items-center gap-3">
@@ -809,14 +857,16 @@ export default function AdminPage() {
             </div>
             
             <h2 className="font-heading text-2xl font-extrabold tracking-tight text-white uppercase leading-none">
-              {activeTab === 'quotation' ? 'Quotation Builder' : 'NDA Agreement Form'}
+              {activeTab === 'quotation' && 'Quotation Builder'}
+              {activeTab === 'nda' && 'NDA Agreement Form'}
+              {activeTab === 'service' && 'Service Agreement Builder'}
+              {activeTab === 'kickoff' && 'Kickoff Requirements Specification'}
+              {activeTab === 'techstack' && 'Technology Stack Specifications'}
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {/* Left Column: Metadata & Client Info */}
+              {/* Common Left Column */}
               <div className="space-y-6">
-                {/* Document Metadata Form */}
                 <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
                   <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
                     Document Registry
@@ -843,10 +893,9 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Client Branding & Logo Upload */}
                 <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
                   <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
-                    Client Logo & Letterhead Customization
+                    Client Branding
                   </h3>
                   <div className="space-y-3.5">
                     <div className="space-y-1.5">
@@ -859,7 +908,6 @@ export default function AdminPage() {
                       />
                     </div>
                     
-                    {/* File Upload Selector */}
                     <div className="space-y-2">
                       <label className="font-mono text-[10px] text-text-muted block">Client Logo Image</label>
                       <div className="flex gap-3 items-center">
@@ -897,13 +945,12 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Right Column: Spec details (Quotation scope or NDA clauses) */}
+              {/* Specific Forms Column */}
               <div className="space-y-6">
                 
-                {/* Form Fields: Quotation */}
+                {/* FORM TYPE 1: QUOTATION */}
                 {activeTab === 'quotation' && (
                   <>
-                    {/* Client HQ Details */}
                     <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
                       <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
                         Billing Address
@@ -919,7 +966,6 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    {/* Project Details */}
                     <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
                       <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
                         Project Specifications
@@ -948,10 +994,9 @@ export default function AdminPage() {
                   </>
                 )}
 
-                {/* Form Fields: NDA */}
+                {/* FORM TYPE 2: NDA */}
                 {activeTab === 'nda' && (
                   <>
-                    {/* Contractual Parties */}
                     <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
                       <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
                         Contractual Parties
@@ -978,7 +1023,6 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    {/* Agreement Terms */}
                     <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
                       <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
                         Agreement Terms
@@ -1018,10 +1062,175 @@ export default function AdminPage() {
                   </>
                 )}
 
+                {/* FORM TYPE 3: SERVICE AGREEMENT */}
+                {activeTab === 'service' && (
+                  <>
+                    <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                      <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                        Service Billing Address
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="font-mono text-[10px] text-text-muted">Client Headquarters Address</label>
+                          <textarea
+                            value={clientAddress}
+                            onChange={(e) => setClientAddress(e.target.value)}
+                            rows={2}
+                            className="w-full rounded-lg border border-white/10 bg-white/5 p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all resize-none"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] text-text-muted">Total Budget (₹)</label>
+                            <input
+                              type="number"
+                              value={serviceTotal}
+                              onChange={(e) => setServiceTotal(Number(e.target.value))}
+                              className="w-full rounded-lg border border-white/10 bg-white/5 p-2.5 font-mono text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] text-text-muted">Governing State</label>
+                            <input
+                              type="text"
+                              value={governingLaw}
+                              onChange={(e) => setGoverningLaw(e.target.value)}
+                              className="w-full rounded-lg border border-white/10 bg-white/5 p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                      <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                        SLA Service Description
+                      </h3>
+                      <div className="space-y-1.5">
+                        <label className="font-mono text-[10px] text-text-muted">Scope Objective</label>
+                        <input
+                          type="text"
+                          value={projectName}
+                          onChange={(e) => setProjectName(e.target.value)}
+                          className="w-full rounded-lg border border-white/10 bg-white/5 p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* FORM TYPE 4: KICKOFF DETAILS */}
+                {activeTab === 'kickoff' && (
+                  <>
+                    <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                      <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                        Objectives Summary
+                      </h3>
+                      <div className="space-y-1.5">
+                        <label className="font-mono text-[10px] text-text-muted">Target Kickoff Objective</label>
+                        <textarea
+                          value={kickoffObjective}
+                          onChange={(e) => setKickoffObjective(e.target.value)}
+                          rows={2}
+                          className="w-full rounded-lg border border-white/10 bg-white/5 p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all resize-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                      <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                        Sprint Schedule (Timeline)
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="font-mono text-[10px] text-text-muted">Kickoff (Sprint 1)</label>
+                          <input type="text" value={sprintKickoff} onChange={(e) => setSprintKickoff(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="font-mono text-[10px] text-text-muted">Design (Sprint 2)</label>
+                          <input type="text" value={sprintDesign} onChange={(e) => setSprintDesign(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="font-mono text-[10px] text-text-muted">Development</label>
+                          <input type="text" value={sprintDev} onChange={(e) => setSprintDev(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="font-mono text-[10px] text-text-muted">Diagnostics/Test</label>
+                          <input type="text" value={sprintTest} onChange={(e) => setSprintTest(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                        </div>
+                        <div className="space-y-1.5 col-span-2">
+                          <label className="font-mono text-[10px] text-text-muted">Target Launch</label>
+                          <input type="text" value={sprintLaunch} onChange={(e) => setSprintLaunch(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* FORM TYPE 5: TECHSTACK SPECS */}
+                {activeTab === 'techstack' && (
+                  <>
+                    <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                      <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                        Architecture Modules
+                      </h3>
+                      <div className="space-y-3.5">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] text-text-muted">Client Interface</label>
+                            <input type="text" value={stackClient} onChange={(e) => setStackClient(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] text-text-muted">Server Logic</label>
+                            <input type="text" value={stackServer} onChange={(e) => setStackServer(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] text-text-muted">Database Layer</label>
+                            <input type="text" value={stackDb} onChange={(e) => setStackDb(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] text-text-muted">Hosting Node</label>
+                            <input type="text" value={stackHost} onChange={(e) => setStackHost(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] text-text-muted">AI Reasoner Model</label>
+                            <input type="text" value={stackAi} onChange={(e) => setStackAi(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] text-text-muted">Security Access</label>
+                            <input type="text" value={stackAuth} onChange={(e) => setStackAuth(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 font-sans text-xs text-white outline-none" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                      <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                        Project Target Specs
+                      </h3>
+                      <div className="space-y-1.5">
+                        <label className="font-mono text-[10px] text-text-muted">Application Target Title</label>
+                        <input
+                          type="text"
+                          value={projectName}
+                          onChange={(e) => setProjectName(e.target.value)}
+                          className="w-full rounded-lg border border-white/10 bg-white/5 p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
               </div>
             </div>
 
-            {/* Quotation Pricing Items (Full-width placement below columns) */}
+            {/* LOWER PORTION DYNAMIC LIST FORMS */}
+            
+            {/* Quotation Item List Builder */}
             {activeTab === 'quotation' && (
               <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
                 <div className="flex items-center justify-between">
@@ -1048,7 +1257,7 @@ export default function AdminPage() {
                             value={item.title}
                             onChange={(e) => updateQuoteItem(item.id, 'title', e.target.value)}
                             placeholder="Module description"
-                            className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-3 py-2 font-sans text-xs text-white focus:border-accent-cyan/50 outline-none"
+                            className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-3 py-2 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none"
                           />
                         </div>
                         <div className="relative flex items-center">
@@ -1057,7 +1266,7 @@ export default function AdminPage() {
                             type="number"
                             value={item.qty}
                             onChange={(e) => updateQuoteItem(item.id, 'qty', e.target.value)}
-                            className="w-full rounded-md border border-white/10 bg-[#0A0A0A] py-2 pl-12 pr-3 font-mono text-xs text-white focus:border-accent-cyan/50 outline-none"
+                            className="w-full rounded-md border border-white/10 bg-[#0A0A0A] py-2 pl-12 pr-3 font-mono text-xs text-white focus:border-accent-cyan/55 outline-none"
                           />
                         </div>
                         <div className="relative flex items-center">
@@ -1066,7 +1275,7 @@ export default function AdminPage() {
                             type="number"
                             value={item.rate}
                             onChange={(e) => updateQuoteItem(item.id, 'rate', e.target.value)}
-                            className="w-full rounded-md border border-white/10 bg-[#0A0A0A] py-2 pl-16 pr-3 font-mono text-xs text-white focus:border-accent-cyan/50 outline-none"
+                            className="w-full rounded-md border border-white/10 bg-[#0A0A0A] py-2 pl-16 pr-3 font-mono text-xs text-white focus:border-accent-cyan/55 outline-none"
                           />
                         </div>
                       </div>
@@ -1074,6 +1283,123 @@ export default function AdminPage() {
                         <button
                           type="button"
                           onClick={() => removeQuoteItem(item.id)}
+                          className="text-text-muted hover:text-red-400 p-2 cursor-pointer transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Service Milestones Builder */}
+            {activeTab === 'service' && (
+              <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                    Payment Milestones Split
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={addMilestone}
+                    className="flex items-center gap-1 cursor-pointer font-mono text-[10px] uppercase text-accent-cyan hover:brightness-110"
+                  >
+                    <Plus size={12} /> Add Milestone
+                  </button>
+                </div>
+
+                <div className="space-y-3.5">
+                  {milestones.map((ms, index) => {
+                    const computedAmount = Math.round(serviceTotal * (ms.percentage / 100))
+                    return (
+                      <div key={index} className="flex gap-4 items-center p-4 rounded-xl bg-white/5 border border-white/5">
+                        <span className="font-mono text-xs text-text-muted w-6">{index + 1}.</span>
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="md:col-span-1">
+                            <input
+                              type="text"
+                              value={ms.title}
+                              onChange={(e) => updateMilestone(index, 'title', e.target.value)}
+                              placeholder="Milestone release phase"
+                              className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-3 py-2 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none"
+                            />
+                          </div>
+                          <div className="relative flex items-center">
+                            <span className="absolute left-3 font-mono text-[10px] text-text-muted">Split (%):</span>
+                            <input
+                              type="number"
+                              value={ms.percentage}
+                              onChange={(e) => updateMilestone(index, 'percentage', e.target.value)}
+                              className="w-full rounded-md border border-white/10 bg-[#0A0A0A] py-2 pl-16 pr-3 font-mono text-xs text-white focus:border-accent-cyan/55 outline-none"
+                            />
+                          </div>
+                          <div className="flex items-center justify-end font-mono text-xs text-text-muted pr-3">
+                            <span>Computed: ₹{computedAmount.toLocaleString()}</span>
+                          </div>
+                        </div>
+                        {milestones.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeMilestone(index)}
+                            className="text-text-muted hover:text-red-400 p-2 cursor-pointer transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Kickoff Checklist Requirements Builder */}
+            {activeTab === 'kickoff' && (
+              <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                    Project Requirements Checklist
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={addChecklistItem}
+                    className="flex items-center gap-1 cursor-pointer font-mono text-[10px] uppercase text-accent-cyan hover:brightness-110"
+                  >
+                    <Plus size={12} /> Add Task
+                  </button>
+                </div>
+
+                <div className="space-y-3.5">
+                  {checklist.map((item, index) => (
+                    <div key={index} className="flex gap-4 items-center p-4 rounded-xl bg-white/5 border border-white/5">
+                      <span className="font-mono text-xs text-text-muted w-6">{index + 1}.</span>
+                      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <input
+                            type="text"
+                            value={item.title}
+                            onChange={(e) => updateChecklistItem(index, 'title', e.target.value)}
+                            placeholder="Requirement checklist task description"
+                            className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-3 py-2 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none"
+                          />
+                        </div>
+                        <div>
+                          <select
+                            value={item.status}
+                            onChange={(e) => updateChecklistItem(index, 'status', e.target.value)}
+                            className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-3 py-2 font-mono text-xs text-white focus:border-accent-cyan/55 outline-none cursor-pointer"
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                          </select>
+                        </div>
+                      </div>
+                      {checklist.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeChecklistItem(index)}
                           className="text-text-muted hover:text-red-400 p-2 cursor-pointer transition-colors"
                         >
                           <Trash2 size={16} />
@@ -1109,7 +1435,7 @@ export default function AdminPage() {
         )}
       </section>
 
-      {/* 4. Document Live Preview (A4 simulation) (HIDDEN ON SCREEN, ONLY VISIBLE DURING PRINT) */}
+      {/* 4. Document Live Preview (HIDDEN ON SCREEN, ONLY VISIBLE DURING PRINT) */}
       <section className="print-area hidden bg-white text-black p-0 overflow-visible justify-center items-start print:flex print:w-full print:p-0 print:overflow-visible">
         
         {/* Virtual A4 Sheet Container */}
@@ -1131,7 +1457,11 @@ export default function AdminPage() {
               ) : (
                 <div className="text-right">
                   <h1 className="font-heading text-base font-extrabold uppercase tracking-wide text-[#0D5B3A] leading-none mb-2">
-                    {activeTab === 'quotation' ? 'Project Quotation' : 'NDA Agreement'}
+                    {activeTab === 'quotation' && 'Project Quotation'}
+                    {activeTab === 'nda' && 'NDA Agreement'}
+                    {activeTab === 'service' && 'Service Agreement'}
+                    {activeTab === 'kickoff' && 'Kickoff Requirements'}
+                    {activeTab === 'techstack' && 'Technology Stack'}
                   </h1>
                   <p className="font-mono text-[10px] text-gray-500">
                     ID: <span className="text-black font-semibold">{docId}</span>
@@ -1146,7 +1476,7 @@ export default function AdminPage() {
             {/* Document Content Body */}
             <div className="font-sans text-xs leading-relaxed text-gray-800 print-text-dark select-text">
               
-              {/* QUOTATION TEMPLATE */}
+              {/* TYPE 1: QUOTATION */}
               {activeTab === 'quotation' && (
                 <div className="space-y-6">
                   {clientLogoUrl && (
@@ -1191,7 +1521,6 @@ export default function AdminPage() {
                     </p>
                   </div>
 
-                  {/* Line Items Table */}
                   <div>
                     <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-3 print-text-muted">
                       Scope Allocation & Cost Breakdown
@@ -1220,7 +1549,6 @@ export default function AdminPage() {
                     </table>
                   </div>
 
-                  {/* Summary / Total Section */}
                   <div className="flex justify-end pt-4">
                     <div className="w-64 space-y-2 border-t border-gray-100 pt-4 print-border">
                       <div className="flex justify-between font-mono text-[10px] text-gray-500">
@@ -1238,7 +1566,6 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  {/* Notes / Terms */}
                   <div className="pt-6 space-y-2 border-t border-gray-100 print-border">
                     <h5 className="font-heading text-[9px] font-bold uppercase tracking-wider text-gray-400">
                       Standard Terms & Provisions
@@ -1246,13 +1573,12 @@ export default function AdminPage() {
                     <ul className="list-disc list-inside text-[10px] text-gray-500 space-y-1">
                       <li>Quotations are valid for exactly 30 days from the document date.</li>
                       <li>Payment milestones: 30% initial project kickoff, 40% mid-point milestone, 30% delivery.</li>
-                      <li>Any changes in target project requirements will be processed under separate scope addenda.</li>
                     </ul>
                   </div>
                 </div>
               )}
 
-              {/* NDA AGREEMENT TEMPLATE */}
+              {/* TYPE 2: NDA AGREEMENT */}
               {activeTab === 'nda' && (
                 <div className="space-y-6">
                   {clientLogoUrl && (
@@ -1332,6 +1658,219 @@ export default function AdminPage() {
                         <strong> {governingLaw}</strong>, without regard to its conflict of law principles. Any dispute 
                         shall be resolved in courts within the governing jurisdiction.
                       </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TYPE 3: SERVICE AGREEMENT */}
+              {activeTab === 'service' && (
+                <div className="space-y-6">
+                  {clientLogoUrl && (
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
+                          Service Client
+                        </h5>
+                        <p className="font-bold text-sm text-black">{clientName}</p>
+                        <p className="text-gray-500 font-medium">{clientAddress}</p>
+                      </div>
+                      <div className="text-right">
+                        <h2 className="font-heading text-sm font-bold uppercase tracking-wide text-[#0D5B3A] leading-none mb-2">
+                          Service Agreement
+                        </h2>
+                        <p className="font-mono text-[10px] text-gray-500">
+                          ID: <span className="text-black font-semibold">{docId}</span>
+                        </p>
+                        <p className="font-mono text-[10px] text-gray-500">
+                          Date: <span className="text-black font-semibold">{docDate}</span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!clientLogoUrl && (
+                    <div>
+                      <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
+                        Service Client
+                      </h5>
+                      <p className="font-bold text-sm text-black">{clientName}</p>
+                      <p className="text-gray-500 font-medium">{clientAddress}</p>
+                    </div>
+                  )}
+
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
+                      Scope of Services: <span className="text-black capitalize font-bold">{projectName}</span>
+                    </h5>
+                    <p className="text-gray-600 italic bg-gray-50 p-4 border-l-2 border-[#0D5B3A] rounded-r-md print:bg-gray-100">
+                      "Implementation of Custom Software architecture modules as outlined in the project deliverables."
+                    </p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-3 print-text-muted">
+                      Payment Milestones Split
+                    </h5>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-[#0D5B3A] font-heading text-[10px] uppercase tracking-wider text-gray-500 print-border">
+                          <th className="py-2.5 font-bold">Milestone Description</th>
+                          <th className="py-2.5 text-center font-bold w-24">Percentage</th>
+                          <th className="py-2.5 text-right font-bold w-32">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {milestones.map((ms, i) => (
+                          <tr key={i} className="border-b border-gray-100 font-sans print-border">
+                            <td className="py-3 font-semibold text-black">{ms.title}</td>
+                            <td className="py-3 text-center font-mono text-gray-600">{ms.percentage}%</td>
+                            <td className="py-3 text-right font-mono text-black font-semibold">
+                              ₹{Math.round(serviceTotal * (ms.percentage / 100)).toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex justify-end pt-4">
+                    <div className="w-64 space-y-2 border-t border-gray-100 pt-4 print-border">
+                      <div className="flex justify-between border-t border-[#0D5B3A] pt-2 font-heading text-sm font-bold text-black print-border">
+                        <span>TOTAL BUDGET:</span>
+                        <span className="text-[#0D5B3A] font-extrabold">₹{serviceTotal.toLocaleString()} INR</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 space-y-2 border-t border-gray-100 print-border">
+                    <h5 className="font-heading text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                      Jurisdiction & Liability
+                    </h5>
+                    <p className="text-[9px] text-gray-500">
+                      This SLA is governed under the jurisdiction of the {governingLaw}. Under no circumstances shall either party be liable to the other for indirect, special, or consequential damages.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* TYPE 4: KICKOFF DETAILS */}
+              {activeTab === 'kickoff' && (
+                <div className="space-y-6">
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
+                      Project Client
+                    </h5>
+                    <p className="font-bold text-sm text-black">{clientName}</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
+                      Core Objective
+                    </h5>
+                    <p className="text-gray-600 italic bg-gray-50 p-4 border-l-2 border-[#0D5B3A] rounded-r-md print:bg-gray-100">
+                      "{kickoffObjective}"
+                    </p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-3 print-text-muted">
+                      Requirements Checklist
+                    </h5>
+                    <div className="space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-100 print:bg-gray-100">
+                      {checklist.map((item, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 ${
+                            item.status === 'Completed' ? 'bg-[#0D5B3A] border-[#0D5B3A] text-white' : 'border-gray-300 bg-white'
+                          }`}>
+                            {item.status === 'Completed' && '✓'}
+                          </div>
+                          <span className={`text-[11px] ${item.status === 'Completed' ? 'line-through text-gray-400' : 'text-gray-700 font-semibold'}`}>
+                            {item.title}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-3 print-text-muted">
+                      Sprint Timeline Schedule
+                    </h5>
+                    <div className="grid grid-cols-5 gap-3 border border-gray-100 rounded-xl p-4 bg-gray-50 text-center print:bg-gray-100">
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Kickoff</span>
+                        <span className="text-[10px] font-bold text-black block mt-1">{sprintKickoff}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Design</span>
+                        <span className="text-[10px] font-bold text-black block mt-1">{sprintDesign}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Dev</span>
+                        <span className="text-[10px] font-bold text-black block mt-1">{sprintDev}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Test</span>
+                        <span className="text-[10px] font-bold text-black block mt-1">{sprintTest}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Launch</span>
+                        <span className="text-[10px] font-bold text-black block mt-1">{sprintLaunch}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TYPE 5: TECHSTACK SPECS */}
+              {activeTab === 'techstack' && (
+                <div className="space-y-6">
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
+                      Project Client
+                    </h5>
+                    <p className="font-bold text-sm text-black">{clientName}</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-2 print-text-muted">
+                      Target Architecture
+                    </h5>
+                    <p className="text-gray-600 italic bg-gray-50 p-4 border-l-2 border-[#0D5B3A] rounded-r-md print:bg-gray-100">
+                      "{projectName}"
+                    </p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-heading text-[10px] font-bold uppercase tracking-wider text-[#C8A870] mb-3 print-text-muted">
+                      Core Technologies Allocation
+                    </h5>
+                    <div className="grid grid-cols-2 gap-4 border border-gray-100 rounded-xl p-4 bg-gray-50 print:bg-gray-100">
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Client Layer</span>
+                        <span className="text-xs font-bold text-black block mt-0.5">{stackClient}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Server Logic</span>
+                        <span className="text-xs font-bold text-black block mt-0.5">{stackServer}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Database Storage</span>
+                        <span className="text-xs font-bold text-black block mt-0.5">{stackDb}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Hosting Node</span>
+                        <span className="text-xs font-bold text-black block mt-0.5">{stackHost}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">AI Model</span>
+                        <span className="text-xs font-bold text-black block mt-0.5">{stackAi}</span>
+                      </div>
+                      <div>
+                        <span className="font-heading text-[9px] text-[#C8A870] uppercase block">Security Access</span>
+                        <span className="text-xs font-bold text-black block mt-0.5">{stackAuth}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
