@@ -862,38 +862,17 @@ export default function AdminPage() {
         <div className="w-[210mm] min-h-[297mm] bg-white text-black p-12 shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-gray-100 flex flex-col justify-between print:border-none print:shadow-none print:w-full print:p-0 print:min-h-0 print:h-auto">
           <div>
             
-            {/* Header: Branded Letterhead */}
-            <header className="flex items-start justify-between border-b-2 border-[#0D5B3A] pb-6 mb-8 print:border-b-2">
-              <div className="flex gap-4 items-center">
-                {/* Company Logo Image */}
-                <div className="h-14 w-14 flex items-center justify-center rounded-xl bg-gray-50 border border-gray-100 p-2.5">
-                  <img src="/logo.png" alt="Prigenix Logo" className="h-full w-full object-contain" />
-                </div>
-                <div>
-                  <h4 className="font-heading text-lg font-extrabold uppercase tracking-widest text-[#0D5B3A] leading-none mb-1">
-                    Prigenix
-                  </h4>
-                  <p className="font-mono text-[9px] text-gray-500 uppercase tracking-wider block">
-                    Software Development Studio
-                  </p>
-                  <p className="font-sans text-[9px] text-gray-400 leading-tight">
-                    Seattle, WA • www.prigenix.com • contact@prigenix.com
-                  </p>
-                </div>
+            {/* Header: Branded Letterhead (Logos Only) */}
+            <header className="flex items-center justify-between border-b-2 border-[#0D5B3A] pb-6 mb-8 print:border-b-2">
+              {/* Left: Prigenix Logo Only */}
+              <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-gray-50 border border-gray-100 p-2.5 shrink-0">
+                <img src="/logo.png" alt="Prigenix Logo" className="h-full w-full object-contain" />
               </div>
 
-              {/* Dynamic Client Logo Image (Uploaded) */}
+              {/* Right: Client Logo (if uploaded) OR Document Details (if not uploaded) */}
               {clientLogoUrl ? (
-                <div className="flex gap-4 items-center">
-                  <div className="text-right">
-                    <span className="font-mono text-[8px] text-gray-400 block uppercase tracking-widest">Prepared for</span>
-                    <h5 className="font-heading text-xs font-extrabold uppercase text-gray-700 leading-none">
-                      {clientName}
-                    </h5>
-                  </div>
-                  <div className="h-14 w-20 flex items-center justify-center rounded-xl bg-gray-50 border border-gray-100 p-2">
-                    <img src={clientLogoUrl} className="h-full w-full object-contain" alt="Client Logo" />
-                  </div>
+                <div className="h-16 w-20 flex items-center justify-center rounded-xl bg-gray-50 border border-gray-100 p-2 shrink-0">
+                  <img src={clientLogoUrl} className="h-full w-full object-contain" alt="Client Logo" />
                 </div>
               ) : (
                 <div className="text-right">
@@ -1104,32 +1083,6 @@ export default function AdminPage() {
                 </div>
               )}
 
-              {/* Dynamic Signature Blocks */}
-              <div className="pt-16 grid grid-cols-2 gap-12 border-t border-gray-100 mt-12 print-border">
-                <div className="space-y-6">
-                  <span className="font-mono text-[9px] text-gray-400 block uppercase">
-                    Authorized Representative (Developer)
-                  </span>
-                  <div className="border-b border-gray-300 w-full h-8 print-border" />
-                  <div className="space-y-1">
-                    <p className="font-bold text-black">{disclosingParty}</p>
-                    <p className="text-gray-500 font-medium">Title: Technical Director</p>
-                    <p className="text-gray-400 font-mono text-[9px]">Date: ________________________</p>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <span className="font-mono text-[9px] text-gray-400 block uppercase">
-                    Authorized Representative (Client)
-                  </span>
-                  <div className="border-b border-gray-300 w-full h-8 print-border" />
-                  <div className="space-y-1">
-                    <p className="font-bold text-black">{receivingParty}</p>
-                    <p className="text-gray-500 font-medium">Title: ________________________</p>
-                    <p className="text-gray-400 font-mono text-[9px]">Date: ________________________</p>
-                  </div>
-                </div>
-              </div>
 
             </div>
           </div>
