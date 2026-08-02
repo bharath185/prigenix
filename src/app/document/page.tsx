@@ -121,14 +121,14 @@ function DocumentViewerContent() {
           {/* Header Block (Logos Only) */}
           <header className="flex items-center justify-between border-b-2 border-[#0D5B3A] pb-6 mb-8 print:border-b-2">
             {/* Left: Prigenix logo */}
-            <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-gray-50 border border-gray-100 p-2.5 shrink-0">
+            <div className="h-24 w-24 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
               <img src="/logo.png" alt="Prigenix Logo" className="h-full w-full object-contain" />
             </div>
 
             {/* Center: Document metadata */}
             <div className="text-center mx-auto">
               <h1 className="font-heading text-sm font-extrabold uppercase tracking-widest text-[#0D5B3A] leading-none mb-1.5">
-                {document.type === 'Quotation' && 'Project Quotation'}
+                {document.type === 'Quotation' && 'Quotation'}
                 {document.type === 'NDA' && 'Mutual NDA Agreement'}
                 {document.type === 'Service Agreement' && 'Service Level Agreement'}
                 {document.type === 'Kickoff Requirement' && 'Kickoff Requirements Specification'}
@@ -143,11 +143,11 @@ function DocumentViewerContent() {
 
             {/* Right: Client logo if uploaded */}
             {document.clientLogo ? (
-              <div className="h-16 w-20 flex items-center justify-center rounded-xl bg-gray-50 border border-gray-100 p-2 shrink-0">
+              <div className="h-24 w-32 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
                 <img src={document.clientLogo} className="h-full w-full object-contain" alt="Client Logo" />
               </div>
             ) : (
-              <div className="w-16 h-16 flex items-center justify-end font-heading text-[10px] font-extrabold uppercase tracking-wider text-gray-400 text-right shrink-0 leading-tight">
+              <div className="w-24 h-24 flex items-center justify-end font-heading text-[10px] font-extrabold uppercase tracking-wider text-gray-400 text-right shrink-0 leading-tight">
                 {document.clientName.split(' ')[0]}
               </div>
             )}
@@ -218,8 +218,9 @@ function DocumentViewerContent() {
                 <div className="pt-6 space-y-2 border-t border-gray-100">
                   <h5 className="font-heading text-[9px] font-bold uppercase tracking-wider text-gray-400">Standard Terms & Provisions</h5>
                   <ul className="list-disc list-inside text-[10px] text-gray-500 space-y-1">
-                    <li>Quotations are valid for exactly 30 days from the document date.</li>
-                    <li>Payment milestones: 30% initial project kickoff, 40% mid-point milestone, 30% delivery.</li>
+                    {(content.termsProvisions || 'Quotations are valid for exactly 30 days from the document date.\nPayment milestones: 30% initial project kickoff, 40% mid-point milestone, 30% delivery.').split('\n').map((term: string, i: number) => (
+                      <li key={i}>{term}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -334,9 +335,14 @@ function DocumentViewerContent() {
                 </div>
 
                 <div className="pt-6 space-y-2 border-t border-gray-100">
-                  <h5 className="font-heading text-[9px] font-bold uppercase tracking-wider text-gray-400">Jurisdiction & Liability</h5>
-                  <p className="text-[10px] text-gray-500">
-                    This Service Level Agreement shall be governed under the laws of the {content.governingLaw || 'State of California'}. Under no circumstances shall either party be liable to the other for indirect, special, or consequential damages.
+                  <h5 className="font-heading text-[9px] font-bold uppercase tracking-wider text-gray-400">Standard Terms & Provisions</h5>
+                  <ul className="list-disc list-inside text-[10px] text-gray-500 space-y-1 mb-3">
+                    {(content.termsProvisions || 'This Service Level Agreement shall be governed under the laws of the State of California.').split('\n').map((term: string, i: number) => (
+                      <li key={i}>{term}</li>
+                    ))}
+                  </ul>
+                  <p className="text-[9px] text-gray-500 leading-tight">
+                    Under no circumstances shall either party be liable to the other for indirect, special, or consequential damages.
                   </p>
                 </div>
               </div>

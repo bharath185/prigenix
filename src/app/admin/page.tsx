@@ -191,6 +191,11 @@ export default function AdminPage() {
   const [stackAi, setStackAi] = useState('Google Gemini 2.0 Pro')
   const [stackAuth, setStackAuth] = useState('Credentials Browser LocalStorage')
 
+  // Dynamic Terms & Provisions (Quotations / Service SLA)
+  const [termsProvisions, setTermsProvisions] = useState(
+    "Quotations are valid for exactly 30 days from the document date.\nPayment milestones: 30% initial project kickoff, 40% mid-point milestone, 30% delivery."
+  )
+
   // Client Selection Change triggers auto-population
   const handleClientSelectionChange = (selectedCompanyName: string) => {
     setClientName(selectedCompanyName)
@@ -362,7 +367,7 @@ export default function AdminPage() {
       typeName = 'Quotation'
       subject = projectName
       documentTotal = total
-      contentPayload = { quoteItems, projectDescription, clientAddress }
+      contentPayload = { quoteItems, projectDescription, clientAddress, termsProvisions }
     } else if (activeTab === 'nda') {
       typeName = 'NDA'
       subject = ndaPurpose
@@ -371,7 +376,7 @@ export default function AdminPage() {
       typeName = 'Service Agreement'
       subject = projectName
       documentTotal = serviceTotal
-      contentPayload = { milestones, clientAddress, governingLaw }
+      contentPayload = { milestones, clientAddress, governingLaw, termsProvisions }
     } else if (activeTab === 'kickoff') {
       typeName = 'Kickoff Requirement'
       subject = kickoffObjective
@@ -903,7 +908,7 @@ export default function AdminPage() {
                           <select
                             value={doc.status}
                             onChange={(e) => updateDocStatus(doc.id, e.target.value as any)}
-                            className="bg-[#0A0A0A] border border-white/10 rounded-md py-0.5 px-1.5 font-mono text-[9px] text-white focus:border-accent-cyan/50 outline-none cursor-pointer"
+                            className="bg-[#0A0A0A] border border-white/10 rounded-md py-0.5 px-1.5 font-mono text-[9px] text-white focus:border-accent-cyan/55 outline-none cursor-pointer"
                           >
                             <option value="Draft">Draft</option>
                             <option value="Sent">Sent</option>
@@ -934,6 +939,7 @@ export default function AdminPage() {
                                   setProjectDescription(parsed.projectDescription || '')
                                   setQuoteItems(parsed.quoteItems || [])
                                   setClientAddress(parsed.clientAddress || '')
+                                  setTermsProvisions(parsed.termsProvisions || 'Quotations are valid for exactly 30 days from the document date.\nPayment milestones: 30% initial project kickoff, 40% mid-point milestone, 30% delivery.')
                                   setActiveTab('quotation')
                                 } else if (doc.type === 'NDA') {
                                   setNdaPurpose(doc.subject)
@@ -948,6 +954,7 @@ export default function AdminPage() {
                                   setMilestones(parsed.milestones || [])
                                   setClientAddress(parsed.clientAddress || '')
                                   setGoverningLaw(parsed.governingLaw || '')
+                                  setTermsProvisions(parsed.termsProvisions || 'Quotations are valid for exactly 30 days from the document date.\nPayment milestones: 30% initial project kickoff, 40% mid-point milestone, 30% delivery.')
                                   setActiveTab('service')
                                 } else if (doc.type === 'Kickoff Requirement') {
                                   setKickoffObjective(doc.subject)
@@ -969,7 +976,7 @@ export default function AdminPage() {
                                   setActiveTab('techstack')
                                 }
                               }}
-                              className="p-1 rounded bg-white/5 border border-white/5 hover:border-accent-cyan/30 text-accent-cyan transition-all cursor-pointer animate-pulse-subtle"
+                              className="p-1 rounded bg-white/5 border border-white/5 hover:border-accent-cyan/30 text-accent-cyan transition-all cursor-pointer"
                               title="Load & Print"
                             >
                               <Printer size={11} />
@@ -1268,7 +1275,7 @@ export default function AdminPage() {
                           )}
                         </div>
                         {clientLogoUrl ? (
-                          <div className="mt-2 flex h-14 w-28 items-center justify-center rounded-lg bg-white/5 p-2 border border-white/5 overflow-hidden">
+                          <div className="mt-2 flex h-14 w-28 items-center justify-center rounded-lg bg-white/5 p-2 border border-white/5 overflow-hidden bg-transparent">
                             <img src={clientLogoUrl} className="h-full w-full object-contain" alt="Client Logo Thumbnail" />
                           </div>
                         ) : (
@@ -1448,7 +1455,7 @@ export default function AdminPage() {
                             type="text"
                             value={projectName}
                             onChange={(e) => setProjectName(e.target.value)}
-                            className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
+                            className="w-full rounded-lg border border-[#0A0A0A] bg-[#0A0A0A] p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all"
                           />
                         </div>
                       </div>
@@ -1492,7 +1499,7 @@ export default function AdminPage() {
                           </div>
                           <div className="space-y-1.5">
                             <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Diagnostics/Test</label>
-                            <input type="text" value={sprintTest} onChange={(e) => setSprintTest(e.target.value)} className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
+                            <input type="text" value={sprintTest} onChange={(e) => setSprintTest(e.target.value)} className="w-full rounded-lg border border-[#0A0A0A] bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
                           </div>
                           <div className="space-y-1.5 col-span-2">
                             <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Target Launch</label>
@@ -1514,31 +1521,31 @@ export default function AdminPage() {
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                               <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Client Interface</label>
-                              <input type="text" value={stackClient} onChange={(e) => setStackClient(e.target.value)} className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
+                              <input type="text" value={stackClient} onChange={(e) => setStackClient(e.target.value)} className="w-full rounded-lg border border-[#0A0A0A] bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
                             </div>
                             <div className="space-y-1.5">
                               <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Server Logic</label>
-                              <input type="text" value={stackServer} onChange={(e) => setStackServer(e.target.value)} className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
+                              <input type="text" value={stackServer} onChange={(e) => setStackServer(e.target.value)} className="w-full rounded-lg border border-[#0A0A0A] bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                               <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Database Layer</label>
-                              <input type="text" value={stackDb} onChange={(e) => setStackDb(e.target.value)} className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
+                              <input type="text" value={stackDb} onChange={(e) => setStackDb(e.target.value)} className="w-full rounded-lg border border-[#0A0A0A] bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
                             </div>
                             <div className="space-y-1.5">
                               <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Hosting Node</label>
-                              <input type="text" value={stackHost} onChange={(e) => setStackHost(e.target.value)} className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
+                              <input type="text" value={stackHost} onChange={(e) => setStackHost(e.target.value)} className="w-full rounded-lg border border-[#0A0A0A] bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                               <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">AI Reasoner Model</label>
-                              <input type="text" value={stackAi} onChange={(e) => setStackAi(e.target.value)} className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
+                              <input type="text" value={stackAi} onChange={(e) => setStackAi(e.target.value)} className="w-full rounded-lg border border-[#0A0A0A] bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
                             </div>
                             <div className="space-y-1.5">
                               <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Security Access</label>
-                              <input type="text" value={stackAuth} onChange={(e) => setStackAuth(e.target.value)} className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
+                              <input type="text" value={stackAuth} onChange={(e) => setStackAuth(e.target.value)} className="w-full rounded-lg border border-[#0A0A0A] bg-[#0A0A0A] p-2 font-sans text-xs text-white outline-none" />
                             </div>
                           </div>
                         </div>
@@ -1566,124 +1573,145 @@ export default function AdminPage() {
 
               {/* Dynamic cost item builders (Lower portion) */}
               {activeTab === 'quotation' && (
-                <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
-                      Pricing Breakdowns
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={addQuoteItem}
-                      className="flex items-center gap-1 cursor-pointer font-mono text-[10px] uppercase text-accent-cyan hover:brightness-110"
-                    >
-                      <Plus size={12} /> Add Scope Item
-                    </button>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
+                  <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                        Pricing Breakdowns
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={addQuoteItem}
+                        className="flex items-center gap-1 cursor-pointer font-mono text-[10px] uppercase text-accent-cyan hover:brightness-110"
+                      >
+                        <Plus size={12} /> Add Scope Item
+                      </button>
+                    </div>
 
-                  <div className="space-y-3.5">
-                    {quoteItems.map((item, index) => (
-                      <div key={item.id} className="flex gap-4 items-center p-4 rounded-xl bg-white/5 border border-white/5">
-                        <span className="font-mono text-xs text-text-muted w-6">{index + 1}.</span>
-                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
+                    <div className="space-y-3.5 max-h-[30vh] overflow-y-auto pr-1">
+                      {quoteItems.map((item, index) => (
+                        <div key={item.id} className="flex gap-4 items-center p-3 rounded-xl bg-white/5 border border-white/5">
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
                             <input
                               type="text"
                               value={item.title}
                               onChange={(e) => updateQuoteItem(item.id, 'title', e.target.value)}
                               placeholder="Module description"
-                              className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-3 py-2 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none"
+                              className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-2 py-1 font-sans text-[11px] text-white focus:border-accent-cyan/55 outline-none"
                             />
-                          </div>
-                          <div className="relative flex items-center">
-                            <span className="absolute left-3 font-mono text-[9px] text-text-muted uppercase">Qty:</span>
                             <input
                               type="number"
                               value={item.qty}
                               onChange={(e) => updateQuoteItem(item.id, 'qty', e.target.value)}
-                              className="w-full rounded-md border border-white/10 bg-[#0A0A0A] py-2 pl-12 pr-3 font-mono text-xs text-white focus:border-accent-cyan/55 outline-none"
+                              placeholder="Qty"
+                              className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-2 py-1 font-mono text-[11px] text-white focus:border-accent-cyan/55 outline-none"
                             />
-                          </div>
-                          <div className="relative flex items-center">
-                            <span className="absolute left-3 font-mono text-[9px] text-text-muted uppercase">Rate (₹):</span>
                             <input
                               type="number"
                               value={item.rate}
+                              placeholder="Rate"
                               onChange={(e) => updateQuoteItem(item.id, 'rate', e.target.value)}
-                              className="w-full rounded-md border border-white/10 bg-[#0A0A0A] py-2 pl-16 pr-3 font-mono text-xs text-white focus:border-accent-cyan/55 outline-none"
+                              className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-2 py-1 font-mono text-[11px] text-white focus:border-accent-cyan/55 outline-none"
                             />
                           </div>
+                          {quoteItems.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeQuoteItem(item.id)}
+                              className="text-text-muted hover:text-red-400 p-1 cursor-pointer transition-colors"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
-                        {quoteItems.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => removeQuoteItem(item.id)}
-                            className="text-text-muted hover:text-red-400 p-2 cursor-pointer transition-colors"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                      Quotation Terms & Provisions
+                    </h3>
+                    <div className="space-y-1.5">
+                      <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Standard Provisions (One per line)</label>
+                      <textarea
+                        value={termsProvisions}
+                        onChange={(e) => setTermsProvisions(e.target.value)}
+                        rows={4}
+                        className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all resize-none"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
 
               {activeTab === 'service' && (
-                <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
-                      Payment Milestones Split
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={addMilestone}
-                      className="flex items-center gap-1 cursor-pointer font-mono text-[10px] uppercase text-accent-cyan hover:brightness-110"
-                    >
-                      <Plus size={12} /> Add Milestone
-                    </button>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
+                  <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                        Payment Milestones Split
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={addMilestone}
+                        className="flex items-center gap-1 cursor-pointer font-mono text-[10px] uppercase text-accent-cyan hover:brightness-110"
+                      >
+                        <Plus size={12} /> Add Milestone
+                      </button>
+                    </div>
 
-                  <div className="space-y-3.5">
-                    {milestones.map((ms, index) => {
-                      const computedAmount = Math.round(serviceTotal * (ms.percentage / 100))
-                      return (
-                        <div key={index} className="flex gap-4 items-center p-4 rounded-xl bg-white/5 border border-white/5">
-                          <span className="font-mono text-xs text-text-muted w-6">{index + 1}.</span>
-                          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
+                    <div className="space-y-3.5 max-h-[30vh] overflow-y-auto pr-1">
+                      {milestones.map((ms, index) => {
+                        const computedAmount = Math.round(serviceTotal * (ms.percentage / 100))
+                        return (
+                          <div key={index} className="flex gap-4 items-center p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
                               <input
                                 type="text"
                                 value={ms.title}
                                 onChange={(e) => updateMilestone(index, 'title', e.target.value)}
-                                placeholder="Milestone release phase"
-                                className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-3 py-2 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none"
+                                placeholder="Milestone phase"
+                                className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-2 py-1 font-sans text-[11px] text-white focus:border-accent-cyan/55 outline-none"
                               />
-                            </div>
-                            <div className="relative flex items-center">
-                              <span className="absolute left-3 font-mono text-[9px] text-text-muted uppercase">Split (%):</span>
                               <input
                                 type="number"
                                 value={ms.percentage}
                                 onChange={(e) => updateMilestone(index, 'percentage', e.target.value)}
-                                className="w-full rounded-md border border-white/10 bg-[#0A0A0A] py-2 pl-16 pr-3 font-mono text-xs text-white focus:border-accent-cyan/55 outline-none"
+                                className="w-full rounded-md border border-white/10 bg-[#0A0A0A] px-2 py-1 font-mono text-[11px] text-white focus:border-accent-cyan/55 outline-none"
                               />
+                              <div className="flex items-center justify-end font-mono text-[10px] text-text-muted pr-1">
+                                <span>₹{computedAmount.toLocaleString()}</span>
+                              </div>
                             </div>
-                            <div className="flex items-center justify-end font-mono text-xs text-text-muted pr-3">
-                              <span>Computed: ₹{computedAmount.toLocaleString()}</span>
-                            </div>
+                            {milestones.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeMilestone(index)}
+                                className="text-text-muted hover:text-red-400 p-1 cursor-pointer transition-colors"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            )}
                           </div>
-                          {milestones.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeMilestone(index)}
-                              className="text-text-muted hover:text-red-400 p-2 cursor-pointer transition-colors"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          )}
-                        </div>
-                      )
-                    })}
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/5 bg-[#060A08]/50 p-5 space-y-4">
+                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#C8A870]">
+                      Service SLA Terms & Provisions
+                    </h3>
+                    <div className="space-y-1.5">
+                      <label className="font-mono text-[9px] uppercase tracking-wider text-text-muted">Standard Provisions (One per line)</label>
+                      <textarea
+                        value={termsProvisions}
+                        onChange={(e) => setTermsProvisions(e.target.value)}
+                        rows={4}
+                        className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] p-2.5 font-sans text-xs text-white focus:border-accent-cyan/55 outline-none transition-all resize-none"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -1777,20 +1805,20 @@ export default function AdminPage() {
             
             {/* Header: Branded Letterhead (Logos Only) */}
             <header className="flex items-center justify-between border-b-2 border-[#0D5B3A] pb-6 mb-8 print:border-b-2">
-              {/* Left: Prigenix Logo Only */}
-              <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-gray-50 border border-gray-100 p-2.5 shrink-0">
+              {/* Left: Prigenix Logo Only (Transparent & Bigger) */}
+              <div className="h-24 w-24 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
                 <img src="/logo.png" alt="Prigenix Logo" className="h-full w-full object-contain" />
               </div>
 
-              {/* Right: Client Logo (if uploaded) OR Document Details (if not uploaded) */}
+              {/* Right: Client Logo (if uploaded, Transparent & Bigger) OR Document Details (if not uploaded) */}
               {clientLogoUrl ? (
-                <div className="h-16 w-20 flex items-center justify-center rounded-xl bg-gray-50 border border-gray-100 p-2 shrink-0">
+                <div className="h-24 w-32 flex items-center justify-center bg-transparent border-none p-0 shrink-0">
                   <img src={clientLogoUrl} className="h-full w-full object-contain" alt="Client Logo" />
                 </div>
               ) : (
                 <div className="text-right">
                   <h1 className="font-heading text-base font-extrabold uppercase tracking-wide text-[#0D5B3A] leading-none mb-2">
-                    {activeTab === 'quotation' && 'Project Quotation'}
+                    {activeTab === 'quotation' && 'Quotation'}
                     {activeTab === 'nda' && 'NDA Agreement'}
                     {activeTab === 'service' && 'Service Agreement'}
                     {activeTab === 'kickoff' && 'Kickoff Requirements'}
@@ -1823,7 +1851,7 @@ export default function AdminPage() {
                       </div>
                       <div className="text-right">
                         <h2 className="font-heading text-sm font-bold uppercase tracking-wide text-[#0D5B3A] leading-none mb-2">
-                          Project Quotation
+                          Quotation
                         </h2>
                         <p className="font-mono text-[10px] text-gray-500">
                           ID: <span className="text-black font-semibold">{docId}</span>
@@ -1904,8 +1932,9 @@ export default function AdminPage() {
                       Standard Terms & Provisions
                     </h5>
                     <ul className="list-disc list-inside text-[10px] text-gray-500 space-y-1">
-                      <li>Quotations are valid for exactly 30 days from the document date.</li>
-                      <li>Payment milestones: 30% initial project kickoff, 40% mid-point milestone, 30% delivery.</li>
+                      {termsProvisions.split('\n').map((term, i) => (
+                        <li key={i}>{term}</li>
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -2078,11 +2107,13 @@ export default function AdminPage() {
 
                   <div className="pt-6 space-y-2 border-t border-gray-100 print-border">
                     <h5 className="font-heading text-[9px] font-bold uppercase tracking-wider text-gray-400">
-                      Jurisdiction & Liability
+                      Standard Terms & Provisions
                     </h5>
-                    <p className="text-[9px] text-gray-500">
-                      This SLA is governed under the jurisdiction of the {governingLaw}. Under no circumstances shall either party be liable to the other for indirect, special, or consequential damages.
-                    </p>
+                    <ul className="list-disc list-inside text-[10px] text-gray-500 space-y-1">
+                      {termsProvisions.split('\n').map((term, i) => (
+                        <li key={i}>{term}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}
